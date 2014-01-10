@@ -1,0 +1,60 @@
+﻿<div class='container'>
+	<div class='row'>
+		<div class='col-md-2'>
+			<button type="button" class="btn btn-primary btn-lg create-npc">
+				<span class="glyphicon glyphicon-plus">NPC</span>
+			</button>
+			<ul class='nav nav-pills nav-stacked npc-list'>
+			</ul>
+		</div>
+		<div class='col-md-10 npc-detail'>
+			<div class="form-group">
+				<label class='npc-type'></label>
+				<!--input type="text" class="form-control npc-type-input" placeholder="角色名"-->
+				<div class="form-control npc-type-input"></div>
+			</div>
+			<div class="form-group">
+				<label class='col-sm-2 control-label'>性别：</label>
+				<div class="col-sm-8">
+					<div class="btn-group npc-gender" data-toggle="buttons">
+						<label class="btn btn-primary">
+							<input type="radio" name="options" id="unknow">未知
+						</label>
+						<label class="btn btn-primary">
+							<input type="radio" name="options" id="he">他
+						</label>
+						<label class="btn btn-primary">
+							<input type="radio" name="options" id="she">她
+						</label>
+						<label class="btn btn-primary">
+							<input type="radio" name="options" id="it">它
+						</label>
+					</div>
+				</div>
+			</div>
+			<div class='row' class='npc-detail-row'>
+				<div class='col-md-5 npc-attr'>
+					<label class='npc-attr-title'></label>
+					<button type="button" class="btn btn-lg create-npc-attr">
+						<span class="glyphicon glyphicon-plus">形容词</span>
+					</button>
+					<ul class='npc-attr-list'></ul>
+				</div>
+				<div class='col-md-5 npc-action'>
+					<button type="button" class="btn btn-lg create-npc-action">
+						<span class="glyphicon glyphicon-plus">可选动作</span>
+					</button>
+					<ul class='npc-action-list'></ul>
+				</div>
+			</div>
+			<div class='action row'>
+				<button type="button" class="btn btn-primary create-npc-confirm">
+					<span class="glyphicon glyphicon-ok">确定</span>
+				</button>
+				<button type="button" class="btn create-npc-cancel">
+					<span class="glyphicon glyphicon-remove">取消</span>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>

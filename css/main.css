@@ -1,0 +1,81 @@
+/*main*/
+.nav.navbar-nav a {
+    cursor: pointer;
+}
+
+
+/*npc-editor*/
+.npc-item {
+	cursor:pointer;
+}
+.npc-attr-item-view, .npc-action-item-view{
+	height:20px;
+	width:100px;
+	float:left;
+	margin:3px;
+	border:1px solid black;
+	border-radius:3px;
+	text-align: center;
+}
+
+.npc-attr-item-editing, .npc-action-item-editing{
+	text-align: center;
+}
+
+
+/*place-editor*/
+.place-item {
+	cursor:pointer;
+}
+
+.meetable-npc-item {
+	height:40px;
+	margin:3px;
+	border:1px solid black;
+	border-radius:3px;
+	text-align: center;
+	float:left;
+}
+
+.meetable-npc-item select{
+	text-align: center;
+}
+
+.meetable-npc-item option{
+	text-align: center;
+}
+
+/*story-editor*/
+.meetable-place-item , .story-action-item{
+	height:20px;
+	text-align: center;
+}
+
+.meetable-place-item select, .meetable-place-item option, .story-action-item select, .story-action-item option{
+	text-align: center;
+}
+
+.meetable-place-item-wrap , .story-action-item-wrap{
+	border:1px solid black;
+}
+
+.choice-item-number {
+	font-weight:bold;
+}
+
+.choice-item-name {
+	height:20px;
+}
+
+.choice-item-toggle {
+    float: left;
+}
+
+.text-segment-text {
+    width: 100%;
+	resize: vertical;
+}
+
+.result-selector {
+	height:20px;
+}
