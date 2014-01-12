@@ -22,7 +22,10 @@ define(function(require,exports,module){
 				if ( m.meetablePlace && m.meetablePlace.length ){
 					title += "在";
 					title += (_.map(m.meetablePlace, function(place){
-						return Global.placeCollection.get(place.placeId).get("name");
+						if ( place.isType === true ){
+							return place.type;
+						} else
+							return Global.placeCollection.get(place.placeId).get("name");
 					})).join("或");
 				}
 				if ( m.meetableNpc.length ){
@@ -45,13 +48,17 @@ define(function(require,exports,module){
 		tagName:"li",
 		render:function(){
 			var m = this.model;
+			var selectedData = m.placeId || 0;
+			if ( m.isType === true ){
+				selectedData = m.type;
+			}
 			var self = this;
 			this.$el.addClass("list-group-item col-sm-3 meetable-place-item-wrap");
 			this.$el.append("<div class='meetable-place-item'></div>");
 			this.$(".meetable-place-item").viewEditExchangable({
 				editType: "select",
 				selects: placeNames,
-				data:m.placeId||0,
+				data:selectedData,
 				viewClass:"story-meetable-place-view",
 				editClass:"story-meetable-place-edit",
 				onBlur:"apply",
@@ -65,7 +72,7 @@ define(function(require,exports,module){
 	var ActionItem = Backbone.View.extend({
 		tagName:"li",
 		render:function(){
-			var m = this.model;
+			var m = this.model;			
 			var self = this;
 			this.$el.addClass("list-group-item col-sm-3 story-action-item-wrap");
 			this.$el.append("<div class='story-action-item'></div>");
@@ -123,7 +130,9 @@ define(function(require,exports,module){
 			placeNames.push({label:place.get("name"), value:place.id});
 		},
 		onAddAllPlace:function(){
-			placeNames = [];
+			placeNames = _.map(Model.PLACE_TYPE,function(type){
+				return {label:"类型:"+type, value:type, extra:{isType:true} };
+			});
 			this.placeCollection.each(this.onAddPlace, this);
 		},
 		onAddNpc:function(npc){
@@ -245,7 +254,11 @@ define(function(require,exports,module){
 			_.each(array, function(el){
 				var id = $(el).viewEditExchangable("val");
 				if ( id ) {
-					ret.push({ placeId: id });
+					var extra = $(el).viewEditExchangable("extraVal");
+					if ( extra && extra.isType ){
+						ret.push({ isType: true, type: id });
+					} else
+						ret.push({ placeId: id });
 				}
 			},this);
 			return ret;

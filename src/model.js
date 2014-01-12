@@ -72,6 +72,9 @@
 		"城市","山谷","山顶","森林","海洋","小岛","村庄","草原","沙漠","小镇"
 		];
 
+	exports.SKILL_TYPE = [
+		];
+
 	exports.Place = Backbone.Model.extend({
 		defaults:function(){
 			return {

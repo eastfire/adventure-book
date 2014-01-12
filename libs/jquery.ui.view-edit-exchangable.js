@@ -49,7 +49,11 @@
                 edit.empty();
                 var index = -1;
                 for ( var i = 0; i < o.selects.length; i++ ) {
-                    edit.append("<option class='exchangable-edit-option' value="+o.selects[i].value+">"+o.selects[i].label+"</option>");
+					var opt = $("<option class='exchangable-edit-option' value="+o.selects[i].value+">"+o.selects[i].label+"</option>");
+					if (o.selects[i].extra !== undefined )	{
+						opt.data("extra",o.selects[i].extra);
+					}
+                    edit.append(opt);
                     if ( o.data == o.selects[i].value )
                         index = i;
                 }
@@ -91,7 +95,7 @@
 						view.show();
                         edit.hide();
 						if (o.onEdit){
-							o.onEdit(o.data);
+							o.onEdit(o.data, o.extraData);
 						}
 					},
 				});
@@ -109,8 +113,11 @@
                 o.data = d;
                 self._renderView();
                 if (o.onEdit){
-                    o.onEdit(o.data);
+                    o.onEdit(o.data, o.extraData);
                 }
+				if ( o.editType === "select" ){
+					o.extraData = el.find("option:selected").data("extra");
+				}
                 return true;
             }
             this._renderEdit();
@@ -207,6 +214,14 @@
 			if ( this.options.data === undefined )
 				return null;
             return this.options.data;
+        },
+		extraVal:function(){
+			var o = this.options;
+			if ( o.editType !== "select" ){
+				return null;
+			}
+			if ( o.extraData !== undefined )
+				return o.extraData;
         },
         disable:function(){
             var self = this;

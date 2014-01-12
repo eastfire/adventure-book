@@ -266,6 +266,7 @@
 				{label:"2",value:"2"},
 				{label:"3",value:"3"},
 				{label:"4",value:"4"}];
+
 			this.$el.data("view",this);
 			this.$el.addClass("result-item list-group-item");
 			this.$el.html(this.template());
@@ -378,6 +379,14 @@
 				var view = new TextSegmentEditor({model:"你在[[地点]]遇到了[[形容词]]的[[角色]]，决定[[动作]][[TA]]。"});
 				this.segmentList.append(view.render().el);
 			}
+			if ( this.model.length ){
+				_.each(this.model, function(seg){
+					if ( seg.type === "text" ){
+						var view = new TextSegmentEditor({model:seg.val});
+						this.segmentList.append(view.render().el);
+					}
+				},this);
+			}
 		},
 		bindEvent:function(){
 			var self = this;
@@ -429,8 +438,9 @@
 		},
 		val:function(){
 			var ret = [];
-			_.each(this.segmentList, function(seg){
-				ret.push($(seg).data("view").val());
+			_.each(this.segmentList.children(), function(seg){
+				var view = $(seg).data("view");
+				ret.push(view.val());
 			}, this);
 			return ret;
 		}
