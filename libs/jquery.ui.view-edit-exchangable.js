@@ -95,7 +95,7 @@
 						view.show();
                         edit.hide();
 						if (o.onEdit){
-							o.onEdit(o.data, o.extraData);
+							o.onEdit(o.data);
 						}
 					},
 				});
@@ -113,11 +113,8 @@
                 o.data = d;
                 self._renderView();
                 if (o.onEdit){
-                    o.onEdit(o.data, o.extraData);
+                    o.onEdit(o.data);
                 }
-				if ( o.editType === "select" ){
-					o.extraData = el.find("option:selected").data("extra");
-				}
                 return true;
             }
             this._renderEdit();
@@ -217,11 +214,14 @@
         },
 		extraVal:function(){
 			var o = this.options;
+			var el = this.element;
 			if ( o.editType !== "select" ){
 				return null;
 			}
-			if ( o.extraData !== undefined )
-				return o.extraData;
+			var extraData = el.find("option:selected").data("extra");
+			if ( extraData !== undefined )
+				return extraData;
+			return null;
         },
         disable:function(){
             var self = this;
