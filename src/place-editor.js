@@ -130,7 +130,7 @@
 			this.$(".place-type-select").append("<option class='place-type-option'>未定义</option>");
 			_.each(Model.PLACE_TYPE,function(name){
 				this.$(".place-type-select").append("<option class='place-type-option' id='"+name+"'>"+name+"</option>");
-			}, this);
+			}, this);			
 			return this;
 		},
 		onCreatePlaceItem:function(){
@@ -156,11 +156,14 @@
 			this.$(".place-type-select").prop("selectedIndex",index);
 
 			this.$(".meetable-npc-list").empty();
+			this.$(".place-is-secret-check")[0].checked = false;
 			if ( place ){
 				_.each(place.meetableNpc, function(meetable){
 					var view = new exports.MeetableNpcItem({model:meetable, npcNames: npcNames});
 					this.$(".meetable-npc-list").append(view.render().el);
 				},this);
+				if ( place.isSecret )
+					this.$(".place-is-secret-check")[0].checked = true;
 			}
 		},
 		onConfirmCreatePlace:function(){
@@ -177,31 +180,25 @@
 				return;
 			var placeType = this.$(".place-type-select option:selected").attr("id");
 			var placePosition = this.$(".place-position .active input").attr("id");
+			var isSecret = this.$(".place-is-secret-check").prop("checked");
 			var npcs = this.getMeetableNpcs();
 			var self = this;
-			if ( this.currentPlace ) {
-				this.currentPlace.set({".priority":placeName, 
+			var opt = {".priority":placeName, 
 					name:placeName,
 					type:placeType,
 					position:placePosition,
-					meetableNpc: npcs,
-					createBy:{
-						user:1,
-						time:Firebase.ServerValue.TIMESTAMP
-					}
-					
-				});
+					isSecret:isSecret,
+					meetableNpc: npcs	
+				};
+			if ( this.currentPlace ) {
+				this.currentPlace.set(opt);
 				self.onCancelCreatePlace();
 			} else {
-				this.placeCollection.create({".priority":placeName, 
-					name:placeName,
-					type:placeType,
-					position:placePosition,
-					meetableNpc: npcs,
-					createBy:{
-						user:1,
-						time:Firebase.ServerValue.TIMESTAMP
-					} },
+				opt.createBy = {
+					user:1,
+					time:Firebase.ServerValue.TIMESTAMP
+				};
+				this.placeCollection.create(opt,
 				{success:function(){
 					self.onCancelCreatePlace();
 				}});

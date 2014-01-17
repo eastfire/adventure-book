@@ -59,6 +59,12 @@
 	border:1px solid black;
 }
 
+.check-subject-select {
+    height: 20px;
+    padding-top: 7px;
+    width: 200px;
+}
+
 .choice-item-number {
 	font-weight:bold;
 }

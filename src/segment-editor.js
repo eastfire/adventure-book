@@ -75,7 +75,8 @@
 			this.$el.addClass("choice-segment-editor segment-editor");
 			this.$el.html(this.template());
 			this.$el.data("view",this);
-			this.choice_list = this.$(".choice-list");
+			this.choiceList = this.$(".choice-list");
+			this.renderChoiceList();
 		},
 		bindEvent:function(){
 			var self = this;
@@ -83,25 +84,36 @@
 				self.onAddChoice(e);
 			});
 		},
+		renderChoiceList:function(){
+			if ( this.model ){
+				_.each(this.model,function(choice){
+					this.renderChoiceItem(choice.name, choice.segment);
+				},this);
+			}
+		},
 		onAddChoice:function(e){
 			var self = this;
 			e.stopPropagation();
-			if ( this.choice_list.children().length >= exports.MAX_CHOICE_ITEM_NUMBER )
+			if ( this.choiceList.children().length >= exports.MAX_CHOICE_ITEM_NUMBER )
 				return;
+			this.renderChoiceItem();
+			this.renderList();
+		},
+		renderChoiceItem:function(choiceName, choiceSegment){
 			var el = $("<div class='choice-item'></div>");
 			el.html(this.choice_item_template());
-			this.choice_list.append(el);
-			var view = new exports.SegmentEditor();
+			this.choiceList.append(el);
+			var view = new exports.SegmentEditor({model:choiceSegment});
 			el.find(".choice-item-number").text("选项"+(el.index()+1)+":");
 			el.find(".choice-item-name").viewEditExchangable({
 				onBlur:"apply",
-				emptyNote:"请填写选项内容"
+				emptyNote:"请填写选项内容",
+				data:choiceName
 			});
 			el.children(".choice-item-content").append(view.render().el);
 			el.find(".delete-choice-item").on("click",function(e){
 				self.onDeleteChoice(e);
 			});
-			this.renderList();
 		},
 		onDeleteChoice:function(e){
 			e.stopPropagation();
@@ -111,11 +123,11 @@
 			this.renderList();			
 		},
 		renderList:function(){
-			if ( this.choice_list.children().length >= exports.MAX_CHOICE_ITEM_NUMBER ){
-				this.choice_list.siblings(".choice-segment-add-choice").hide();
+			if ( this.choiceList.children().length >= exports.MAX_CHOICE_ITEM_NUMBER ){
+				this.choiceList.siblings(".choice-segment-add-choice").hide();
 			} else 
-				this.choice_list.siblings(".choice-segment-add-choice").show();
-			_.each(this.choice_list.children(), function(el){
+				this.choiceList.siblings(".choice-segment-add-choice").show();
+			_.each(this.choiceList.children(), function(el){
 				el = $(el);
 				el.children(".choice-item-title").children(".choice-item-toggle").children(".choice-item-number").text("选项"+(el.index()+1)+":");
 			});
@@ -130,14 +142,14 @@
 		},
 		val:function(){
 			var allChoice = this.choiceList.children(".choice-item");
-			var choice = [];
+			var choices = [];
 			_.each(allChoice,function(choice){
-				var choiceName = $(choice).children(".choice-item-title").children(".choice-item-toggle").children(".choice-item-name").viewEditExchangable("val");
+				var choiceName = $(choice).children(".choice-item-title").children(".choice-item-name").viewEditExchangable("val");
 				var choiceSegment = $(choice).children(".choice-item-content").children().data("view").val();
-				choice.push({name:choiceName,segment:choiceSegment});
+				choices.push({name:choiceName,segment:choiceSegment});
 			},this);			
-			var ret = {type:"choice",choice:choice}
-			return ;
+			var ret = {type:"choice",val:choices}
+			return ret;
 		}
 	});
 	var CheckSegmentEditor = Backbone.View.extend({
@@ -163,15 +175,32 @@
 			this.checkDiceNumberSelect = this.$(".check-dice-number-select");
 			this.checkDifficultySelect = this.$(".check-difficulty-select");
 			this.generateDifficultySelect();
-			this.checkHideSubjectCheck = this.$(".check-hide-subject-check");
-			this.checkCardUsableCheck = this.$(".check-card-usable-check");
+			this.checkHideSubjectCheck = this.$(".check-hide-subject-check");			
+			this.checkCardUsage = this.$(".check-card-usage");
 			this.checkFailPane.hide();
 			this.checkSuccessRate = this.$(".check-success-rate");
 			this.checkFailRate = this.$(".check-fail-rate");
-			var view = new exports.SegmentEditor();
+			this.checkSubjectSelect.viewEditExchangable({
+				onBlur:"apply",
+				data:this.model&&this.model.type,
+				emptyNote:"请填写检定对象"
+			});
+			var view = new exports.SegmentEditor({model:(this.model&&this.model.success)});
 			this.checkSuccessPane.append(view.render().el);
-			var view2 = new exports.SegmentEditor();
+			var view2 = new exports.SegmentEditor({model:(this.model&&this.model.fail)});
 			this.checkFailPane.append(view2.render().el);
+		},
+		render:function(){
+			var cardUsage =  this.model ? (this.model.card || "play_card"):"play_card";
+			this.checkCardUsage.find("#"+cardUsage).parent().addClass("active");
+			if ( this.model ){
+				this.checkHideSubjectCheck[0].checked = this.model.hide;
+				this.checkDiceNumberSelect.val(this.model.dice);
+				this.checkDifficultySelect.val(this.model.difficulty);
+				//TODO subject
+				this.renderSuccessRate();
+			}
+			return this;
 		},
 		generateSubjectSelect:function(){
 
@@ -218,23 +247,26 @@
 			this.checkFailRate.html("失败("+failRate+"%)");
 		},
 		val:function(){
-			var type = this.checkSubjectSelect.val();
+			var type = this.checkSubjectSelect.viewEditExchangable("val");
 			var diceNumber = this.checkDiceNumberSelect.val();
 			var difficulty = this.checkDifficultySelect.val();
-			var hide = this.checkHideSubjectCheck.val();
-			var card = this.checkCardUsableCheck.val();
+			var hide = this.checkHideSubjectCheck.prop("checked");
+			var card = this.checkCardUsage.find(".active input").attr("id");
 			var success = this.checkSuccessPane.children().data("view").val();
 			var fail = this.checkFailPane.children().data("view").val();
 			var ret = {
 				type: "check",
-				hide: hide,
-				card: card,
-				type: type,
-				dice: diceNumber,
-				difficulty: difficulty,
-				success: success,
-				fail: fail
+				val:{
+					hide: hide,
+					card: card,
+					type: type,
+					dice: diceNumber,
+					difficulty: difficulty,
+					success: success,
+					fail: fail
+				}
 			}
+			return ret;
 		}
 	});
 
@@ -265,7 +297,8 @@
 				{label:"1",value:"1"},
 				{label:"2",value:"2"},
 				{label:"3",value:"3"},
-				{label:"4",value:"4"}];
+				{label:"4",value:"4"},
+				{label:"5",value:"5"}];
 
 			this.$el.data("view",this);
 			this.$el.addClass("result-item list-group-item");
@@ -279,60 +312,79 @@
 				e.stopPropagation();
 				self.$el.remove();
 			});
+			
+			var onTypeSelected = function(resultType){
+				switch (resultType)	{
+					case "getSP":
+					case "getFP":
+						self.resultSubTypeSelect.hide();
+						self.resultObjectSelect.hide();
+						self.resultValueSelect.show();
+						break;
+					case "getCard":
+					case "loseCard":
+						self.resultSubTypeSelect.show();
+						self.resultObjectSelect.hide();
+						self.resultValueSelect.hide();
+						break;
+				}
+			}
+
 			this.resultTypeSelect.viewEditExchangable({
 				onBlur:"apply",
 				editType: "select",
 				emptyNote:"奖励类型",
 				selects:resultTypes,
-				onEdit:function(resultType){
-					switch (resultType)	{
-						case "getSP":
-						case "getFP":
-							self.resultSubTypeSelect.hide();
-							self.resultObjectSelect.hide();
-							self.resultValueSelect.show();
-							break;
-						case "getCard":
-						case "loseCard":
-							self.resultSubTypeSelect.show();
-							self.resultObjectSelect.hide();
-							self.resultValueSelect.hide();
-							break;
-					}
-				}
+				onEdit:onTypeSelected,
+				data: this.model && this.model.type
 			});
 
+			this.model && onTypeSelected(this.model.type);
+
+			var onSubTypeSelect = function(cardType){
+				switch (cardType)	{
+					case "skill":
+						self.resultObjectSelect.show();
+						self.resultValueSelect.hide();
+						break;
+					case "status":
+						self.resultObjectSelect.show();
+						self.resultValueSelect.hide();
+						break;
+					case "item":
+						self.resultObjectSelect.show();
+						self.resultValueSelect.show();
+						break;
+					case "company":
+						self.resultObjectSelect.show();
+						self.resultValueSelect.hide();
+						break;
+				}
+			}
+			
 			this.resultSubTypeSelect.viewEditExchangable({
 				onBlur:"apply",
 				editType: "select",
 				emptyNote:"请选择卡牌类型",
 				selects:cardTypes,
-				onEdit:function(cardType){
-					switch (cardType)	{
-						case "skill":
-							self.resultObjectSelect.show();
-							self.resultValueSelect.hide();
-							break;
-						case "status":
-							self.resultObjectSelect.show();
-							self.resultValueSelect.hide();
-							break;
-						case "item":
-							self.resultObjectSelect.show();
-							self.resultValueSelect.show();
-						case "company":
-							self.resultObjectSelect.show();
-							self.resultValueSelect.hide();
-							break;
-					}
-				}
+				onEdit:onSubTypeSelect,
+				data:this.model && this.model.subtype
 			});
+
+			this.model && onSubTypeSelect(this.model.subtype);
 
 			this.resultValueSelect.viewEditExchangable({
 				onBlur:"apply",
 				editType: "select",
 				emptyNote:"请选择数字",
-				selects:numbers,
+				selects:numbers	,
+				data:this.model && this.model.value
+			});
+
+			this.resultObjectSelect.viewEditExchangable({
+				onBlur:"apply",
+				emptyNote:"请输入卡牌名",
+				data:this.model && this.model.object
 			});
 		},
 	});
@@ -350,13 +402,37 @@
 			this.$el.addClass("result-segment-editor segment-editor");
 			this.$el.html(this.template());
 			this.resultList = this.$(".result-list");
+			_.each(this.model, function(r){
+				this.onAddResultItem(null, r);
+			},this);
 		},
-		onAddResultItem:function(e){
-			var view = new ResultItemView({model:null});
+		onAddResultItem:function(e, result){
+			var view = new ResultItemView({model:result});
 			this.resultList.append(view.render().el);
 		},
 		val:function(){
-			
+			var results = [];
+			_.each(this.resultList.children(),function(el){
+				var r = {};
+				var v = $(el).data("view");
+				r.type = v.resultTypeSelect.viewEditExchangable("val");
+				switch (r.type)	{
+					case "getSP":
+					case "getFP":
+						r.value = v.resultValueSelect.viewEditExchangable("val");
+						break;
+					case "getCard":
+					case "loseCard":
+						r.subtype = v.resultSubTypeSelect.viewEditExchangable("val");
+						r.object = v.resultObjectSelect.viewEditExchangable("val");
+						if ( r.subtype == "item" )	{
+							r.value = v.resultValueSelect.viewEditExchangable("val");
+						}
+						break;
+				}
+				results.push(r);
+			},this);
+			return {type:"result",val:results};
 		}
 	});
 	exports.SegmentEditor = Backbone.View.extend({
@@ -368,22 +444,40 @@
 		initialize:function(options){
 			this.options = options || {};
 			this.initLayout();
-			this.bindEvent();
 		},
 		initLayout:function(){
 			this.$el.addClass("col-sm-offset-1 segment-editor list-group-item");
 			this.$el.html(this.template());
 			this.$el.data("view",this);
 			this.segmentList = this.$(".segment-list");
+			this.bindEvent();
 			if ( !this.model && this.options.isFirstSegment){
 				var view = new TextSegmentEditor({model:"你在[[地点]]遇到了[[形容词]]的[[角色]]，决定[[动作]][[TA]]。"});
 				this.segmentList.append(view.render().el);
 			}
-			if ( this.model.length ){
+			if ( this.model && this.model.length ){
 				_.each(this.model, function(seg){
-					if ( seg.type === "text" ){
-						var view = new TextSegmentEditor({model:seg.val});
-						this.segmentList.append(view.render().el);
+					switch ( seg.type ){
+						case "text": {
+							var view = new TextSegmentEditor({model:seg.val});
+							this.segmentList.append(view.render().el);
+							break;
+						}
+						case "choice":{
+							var view = new ChoiceSegmentEditor({model:seg.val});
+							this.segmentList.append(view.render().el);
+							break;
+						}
+						case "check":{
+							var view = new CheckSegmentEditor({model:seg.val});
+							this.segmentList.append(view.render().el);
+							break;
+						}
+						case "result":{
+							var view = new ResultSegmentEditor({model:seg.val});
+							this.segmentList.append(view.render().el);
+							break;
+						}						
 					}
 				},this);
 			}

@@ -8,6 +8,7 @@ define(function(require,exports,module){
 	var placeNames = [];
 	var actionNames = [];
 	var SegmentEditor = require("./segment-editor").SegmentEditor;
+	var StoryTeller = require("./story-teller").StoryTeller;
 
 	var StoryItem = Backbone.View.extend({
 		tagName:"li",
@@ -97,6 +98,7 @@ define(function(require,exports,module){
 			"click .create-story":"onCreateStoryItem",
 			"click .create-story-confirm":"onConfirmCreateStory",
 			"click .create-story-cancel":"onCancelCreateStory",
+			"click .create-story-preview":"onPreviewStory",
 			"click .add-meetable-npc":"onAddMeetableNpc",
 			"click .add-meetable-place":"onAddMeetablePlace",
 			"click .add-action":"onAddAction"
@@ -220,7 +222,7 @@ define(function(require,exports,module){
 			},this);
 		},
 		
-		onConfirmCreateStory:function(){
+		getStory:function(){
 			var storyName = this.$(".story-name-input").viewEditExchangable("val");
 			if ( storyName )
 				storyName = storyName.trim();
@@ -228,12 +230,16 @@ define(function(require,exports,module){
 			var meetableNpc = this.getMeetableNpcs();
 			var actions = this.getActions();
 			var self = this;
-			var opt = {					
+			return {					
 					meetablePlace:meetablePlace,
 					meetableNpc:meetableNpc,
 					action:actions,
 					segment:this.$(".segment-editor-block").children().data("view").val()
 				}
+		},
+
+		onConfirmCreateStory:function(){
+			var opt = this.getStory();
 			if ( this.currentStory ) {
 				this.currentStory.set(opt);
 				self.onCancelCreateStory();
@@ -248,6 +254,15 @@ define(function(require,exports,module){
 				}});
 			}
 		},
+
+		onPreviewStory:function(){
+			var opt = this.getStory();
+			this.$(".story-detail").hide();
+			this.$(".story-preview").empty().show();
+			var previewView = new StoryTeller({model:opt, preview:true});
+			this.$(".story-preview").append(previewView.render().el);
+		},
+
 		getMeetablePlace:function(){
 			var array = this.$(".meetable-place-item");
 			var ret = [];

@@ -6,25 +6,36 @@
 			<span class='input-group-addon'>
 				<input class='check-hide-subject-check' type="checkbox"/>
 			</span>
-			<span class='form-control'>隐藏检定项目，仅告知发生检定</span>
-		</span>
-		<span class='col-sm-4 input-group'>
-			<span class='input-group-addon'>
-				<input class='check-card-usable-check' checked="checked" type="checkbox"/>
-			</span>
-			<span class='form-control'>允许使用卡牌</span>
+			<span class='form-control'>隐藏检定项目内容，仅告知发生检定</span>
 		</span>
 	</div>
+	<div class="form-group">
+		<label class='col-sm-2 control-label'>卡牌用法：</label>
+		<div class="col-sm-8">
+			<div class="btn-group check-card-usage" data-toggle="buttons">
+				<label class="btn btn-primary">
+					<input type="radio" name="options" id="play_card">用户选择出牌
+				</label>
+				<label class="btn btn-primary">
+					<input type="radio" name="options" id="card_in_hand">直接检定手中的牌
+				</label>				
+				<label class="btn btn-primary">
+					<input type="radio" name="options" id="nouse">不可使用卡牌
+				</label>
+			</div>
+		</div>
+	</div>
 	<div class="form-group form-inline">
-		<label class='col-sm-1 control-label'>检定项目</label>
-		<select class='col-sm-1 form-control check-subject-select'/>
-		<label class='col-sm-1 control-label'>掷骰数</label>
+		<label class='control-label' style="float: left">检定项目：</label>
+		<!--select class='col-sm-1 form-control check-subject-select' style="float: left"/-->
+		<span class='col-sm-1 form-control check-subject-select' style="float: left"/>
+		<label class='control-label' style="float: left">掷骰数：</label>
 		<select class='col-sm-1 form-control check-dice-number-select'>
 			<option class='check-dice-number-option' value="0">无</option>
 			<option class='check-dice-number-option' value="1">1</option>
 			<option class='check-dice-number-option' value="2">2</option>
 		</select>
-		<label class='col-sm-1 control-label'>难度</label>
+		<label class='control-label' style="float: left">难度：</label>
 		<select class='col-sm-1 form-control check-difficulty-select'/>
 	</div>
 	<div class="form-group">
