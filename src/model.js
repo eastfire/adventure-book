@@ -1,12 +1,17 @@
 ﻿define(function(require,exports,module){
 	var Global = require("./global");
-
+	exports.NPC_GENDER = {
+		unknow : "他（她）",
+		he : "他",
+		she : "她",
+		it : "它"
+	};
 	exports.Npc = Backbone.Model.extend({
 		defaults:function(){
 			return {
 				specialName:null,
 				type:"nobody",
-				gender: null,//"male", "female", null
+				gender: "unknow",//"male", "female", null
 				attr:[],
 				action:[],
 				createBy:{

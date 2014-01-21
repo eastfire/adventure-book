@@ -240,6 +240,7 @@ define(function(require,exports,module){
 
 		onConfirmCreateStory:function(){
 			var opt = this.getStory();
+			var self = this;
 			if ( this.currentStory ) {
 				this.currentStory.set(opt);
 				self.onCancelCreateStory();
@@ -259,8 +260,13 @@ define(function(require,exports,module){
 			var opt = this.getStory();
 			this.$(".story-detail").hide();
 			this.$(".story-preview").empty().show();
-			var previewView = new StoryTeller({model:opt, preview:true});
+			var previewView = new StoryTeller({model:opt, isPreview:true});
 			this.$(".story-preview").append(previewView.render().el);
+			var self = this;
+			previewView.on("finish",function(){
+				self.$(".story-detail").show();
+				self.$(".story-preview").empty().hide();
+			});
 		},
 
 		getMeetablePlace:function(){
