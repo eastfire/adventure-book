@@ -144,7 +144,7 @@
 		firebase: new Firebase(Global.FIREBASE_URL + "/world/"+Global.WORLD_ID + "/story")
 	});
 
-	exports.Segment = Backbone.Model.extend({
+	/*exports.Segment = Backbone.Model.extend({
 		defaults:function(){
 			return {
 				type:"text",//text, result, check, choice
@@ -182,5 +182,5 @@
 				getFate:0
 			};
 		}
-	});
+	});*/
 });

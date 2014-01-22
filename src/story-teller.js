@@ -34,6 +34,95 @@ define(function(require,exports,module){
 		}
 	});
 
+	var CheckSegmentTeller = Backbone.View.extend({
+		template:_.template(require("../layout/check-segment-teller.html")),
+		events:{
+			"click .jump-to-check-success":"toSuccess",
+			"click .jump-to-check-fail":"toFail",
+			"click .start-check":"toCheck",
+		},
+		initialize:function(options){
+			this.options = options;
+			this.isPreview = this.options.isPreview;
+			this.$el.data("view",this);
+
+			this.$el.addClass("check-segment-teller");
+			if ( this.preview ){
+				this.$el.addClass("segment-preview");
+			}
+
+		},
+		render:function(){
+			this.$el.html(this.template());
+			this.checkHint = this.$(".check-segment-hint");
+			this.checkCardHint = this.$(".check-segment-card-hint");
+			this.checkResultSegment = this.$(".check-result-segment");
+			this.$(".check-result-label").hide();
+
+			var self = this;
+			if ( !this.isPreview ){
+				this.jumpToSuccess.remove();
+				this.jumpToFail.remove();
+			}
+
+			if ( this.model.hide ){
+				this.checkHint.html("即将发生某种检定。");
+			} else {
+				var str; 
+				if ( this.model.dice === 0 ){
+					str = "即将检定你是否有"+this.model.difficulty+"或以上的"+this.model.type+"。";
+				} else {
+					str = "即将发生"+this.model.type+"检定。扔"+this.model.dice+"颗骰子的结果加你的"+this.model.type+"值是否大于等于"+this.model.difficulty;
+				}
+				this.checkHint.html(str);
+			}
+			if ( this.model.card === "play_card" ){
+				this.checkCardHint.html("你可以使用手中的卡牌");
+			}
+
+			return this;
+		},
+		
+		toSuccess:function(){
+			var self = this;
+			this.$(".check-actions").remove();
+			this.$(".check-result-success-label").show();
+			var view = new SegmentTeller({el:self.checkResultSegment, model:this.model.success, isPreview:self.isPreview, status:self.options.status});
+			view.on("finish",function(){
+				self.trigger("finish");
+			});
+			view.render();
+		},
+		
+		toFail:function(){
+			var self = this;
+			this.$(".check-actions").remove();
+			this.$(".check-result-fail-label").show();
+			var view = new SegmentTeller({el:self.checkResultSegment, model:this.model.fail, isPreview:self.isPreview, status:self.options.status});
+			view.on("finish",function(){
+				self.trigger("finish");
+			});
+			view.render();
+		},
+
+		toCheck:function(){
+			this.$(".check-actions").remove();
+			var total = 0;
+			if ( !this.isPreview ){
+				var adjust = Global.currentUser.adjustment[this.model.type];
+				if ( adjust != 0){
+					total = adjust;
+				}
+			}
+			for (var i = 0; i < this.model.dice; i++ ){
+				total += ( Math.floor( Math.random() * 6 )+1 );
+			}
+			if ( total >= this.model.difficulty )
+				this.toSuccess();
+			else this.toFail();
+		}
+	});
+
 	var ChoiceSegmentTeller = Backbone.View.extend({
 		template:_.template(require("../layout/choice-segment-teller.html")),
 		initialize:function(options){
@@ -67,6 +156,7 @@ define(function(require,exports,module){
 						view.on("finish",function(){
 							self.trigger("finish");
 						});
+						view.render();
 					});
 			},this);
 			return this;
@@ -88,8 +178,6 @@ define(function(require,exports,module){
 			if ( this.preview ){
 				this.$el.addClass("segment-preview");
 			}
-
-			this.renderCurrentSegment();
 		},
 		renderCurrentSegment:function(){
 			if ( this.currentSegmentIndex < 0 || this.currentSegmentIndex >= this.model.length) {
@@ -111,6 +199,12 @@ define(function(require,exports,module){
 					this.$el.append(view.render().el);
 					break;
 				}
+				case "check": {
+					var view = new CheckSegmentTeller({model: this.currentSegment.val, isPreview:this.isPreview, status:this.options.status });
+					this.bindViewFinish(view);
+					this.$el.append(view.render().el);
+					break;
+				}
 			}
 		},
 		bindViewFinish:function(view){
@@ -123,11 +217,12 @@ define(function(require,exports,module){
 			});
 		},
 		renderNextSegment:function(){
-			this.currentSegmentIndex++;
-			this.renderCurrentSegment();
 			nextBtn.hide();
+			this.currentSegmentIndex++;
+			this.renderCurrentSegment();			
 		},
 		render:function(){
+			this.renderCurrentSegment();
 			return this;
 		}
 	});
@@ -177,12 +272,19 @@ define(function(require,exports,module){
 			this.segment = this.$(".segment-teller");
 			this.restartBtn = this.$(".restart-story");
 			if ( !this.isPreview ){
-				this.restartBtn.remove();
+				this.$(".preview-btn").remove();
+			} else {
+				var self = this;
+				this.restartBtn.on("click",function(){
+					self.restart();
+				});
+				this.$(".submit-story").on("click",function(){
+					self.trigger("submit");
+				});
+				this.$(".quit-preview").on("click",function(){
+					self.trigger("finish");
+				});
 			}
-			var self = this;
-			this.restartBtn.on("click",function(){
-				self.restart();
-			});
 		},
 		
 		restart:function(){
@@ -195,6 +297,7 @@ define(function(require,exports,module){
 			view.on("finish",function(){
 				self.trigger("finish");
 			});
+			view.render();
 			return this;
 		},
 		bindEvents:function(){

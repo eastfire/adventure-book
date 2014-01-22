@@ -168,6 +168,7 @@ define(function(require,exports,module){
 			var target = $(event.currentTarget);
 			var id = target.attr("id");
 			this.$(".story-detail").show();
+			this.$(".story-preview").empty().hide();
 			this.currentStory = this.storyCollection.get(id);
 			this.renderStoryDetail(this.currentStory.toJSON());
 		},
@@ -265,6 +266,11 @@ define(function(require,exports,module){
 			var self = this;
 			previewView.on("finish",function(){
 				self.$(".story-detail").show();
+				self.$(".story-preview").empty().hide();
+			});
+			previewView.on("submit",function(){
+				self.$(".story-detail").show();
+				self.onConfirmCreateStory();
 				self.$(".story-preview").empty().hide();
 			});
 		},
