@@ -247,7 +247,7 @@ define(function(require,exports,module){
 				self.onCancelCreateStory();
 			} else {
 				opt.createBy = {
-						user:1,
+						user:Global.currentUser.id,
 						time:Firebase.ServerValue.TIMESTAMP
 					};
 				this.storyCollection.create(opt,

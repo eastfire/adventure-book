@@ -195,7 +195,7 @@
 				self.onCancelCreatePlace();
 			} else {
 				opt.createBy = {
-					user:1,
+					user:Global.currentUser.id,
 					time:Firebase.ServerValue.TIMESTAMP
 				};
 				this.placeCollection.create(opt,

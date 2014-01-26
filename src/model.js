@@ -47,7 +47,7 @@
 	});
 
 	exports.User = Backbone.Firebase.Model.extend({
-		firebase: new Firebase(Global.FIREBASE_URL + "/user/"+this.id),
+		firebase: new Firebase(Global.FIREBASE_URL + "/user/"+Global.currentUserId+"/profile"),
 		defaults:function(){
 			return {
 				nickname:"",
@@ -76,7 +76,12 @@
 	exports.PLACE_TYPE = [
 		"城市","山谷","山顶","森林","海洋","小岛","村庄","草原","沙漠","小镇"
 		];
-
+	exports.CARD_TYPE_MAP = {
+		"status":"状态",
+		"skill":"技能",
+		"item":"物品",
+		"company":"同伴"
+	};
 	exports.BASE_SKILL = [
 		"拳脚","兵器","口才","财力","容貌","骗术","魔法","头脑","运气"
 		];
@@ -142,6 +147,39 @@
 	exports.StoryCollection = Backbone.Firebase.Collection.extend({
 		model : exports.Story,
 		firebase: new Firebase(Global.FIREBASE_URL + "/world/"+Global.WORLD_ID + "/story")
+	});
+
+	exports.CardTemplate = Backbone.Model.extend({
+		defaults:function(){
+			return {
+				title:"",//标题，可以不要
+				type:"",//skill, status, item, company
+				pic:"",
+				text:"",
+				effect:"",
+				cost:0,
+				extend:{}
+			};
+		}
+	});
+	exports.CardTemplateCollection = Backbone.Firebase.Collection.extend({
+		model : exports.CardTemplate,
+		firebase: new Firebase(Global.FIREBASE_URL + "/card")
+	});
+
+	exports.Card = Backbone.Model.extend({
+		defaults:function(){
+			return {
+				cardId:0,
+				position:"",//deck , hand, display, discard
+				extend:{}
+			};
+		}
+	});
+
+	exports.CardCollection = Backbone.Firebase.Collection.extend({
+		model : exports.CardTemplate,
+		firebase: new Firebase(Global.FIREBASE_URL + "/user/"+Global.currentUserId+"/cards")
 	});
 
 	/*exports.Segment = Backbone.Model.extend({

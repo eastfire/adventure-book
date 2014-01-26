@@ -9,6 +9,9 @@ define(function(require,exports,module){
 	var actionNames = [];
 	var nextBtn;
 
+	var resultFuncMap = require("./results").ResultFuncMap;
+	var resultDisplayMap = require("./results").ResultDisplayMap;
+
 	var TextSegmentTeller = Backbone.View.extend({
 		initialize:function(options){
 			this.options = options;
@@ -163,6 +166,40 @@ define(function(require,exports,module){
 		}
 	});
 
+	var ResultSegmentTeller = Backbone.View.extend({
+		initialize:function(options){
+			this.options = options;
+			this.isPreview = this.options.isPreview;
+			this.$el.data("view",this);
+
+			this.$el.addClass("result-segment-teller");
+			if ( this.preview ){
+				this.$el.addClass("segment-preview");
+			}
+
+			
+		},
+		render:function(){
+			var self = this;
+			_.each(this.model, function(result){
+				var line = null;
+				if (resultDisplayMap[result.type] !== undefined ) {
+					line = resultDisplayMap[result.type].call(this, result, this.options.status);
+				}
+				
+				if ( !this.isPreview ){
+					if ( resultFuncMap[result.type] !== undefined) {
+						resultFuncMap[result.type].call(this, result, this.options.status);
+					}
+				}
+				if ( line )
+					this.$el.append("<li class='result-item-line'><label>"+line+"</label></li>");
+			},this);
+			this.trigger("finish");
+			return this;
+		}
+	});
+
 	var SegmentTeller = Backbone.View.extend({
 		initialize:function(options){
 			this.options = options;
@@ -205,11 +242,21 @@ define(function(require,exports,module){
 					this.$el.append(view.render().el);
 					break;
 				}
+				case "result": {
+					var view = new ResultSegmentTeller({model: this.currentSegment.val, isPreview:this.isPreview, status:this.options.status });
+					this.bindViewFinish(view);
+					this.$el.append(view.render().el);
+					break;
+				}
 			}
 		},
 		bindViewFinish:function(view){
 			var self = this;
 			view.on("finish",function(){
+				if ( self.currentSegmentIndex < 0 || self.currentSegmentIndex >= self.model.length - 1) {
+					self.trigger("finish");
+					return;
+				}
 				nextBtn.show();
 				nextBtn.unbind().bind("click",function(){
 					self.renderNextSegment()
@@ -295,7 +342,10 @@ define(function(require,exports,module){
 			var view = new SegmentTeller({el:this.segment, model:this.model.segment, isPreview:this.isPreview, status:this.status});
 			var self = this;
 			view.on("finish",function(){
-				self.trigger("finish");
+				nextBtn.show();
+				nextBtn.unbind().bind("click",function(){
+					self.trigger("finish");
+				});
 			});
 			view.render();
 			return this;
