@@ -119,7 +119,7 @@
 		validateNpc:function(npcType){
 			return npcType != "";
 		},
-		onConfirmCreateNpc:function(){
+		onConfirmCreateNpc:function(event){
 			var npcType = this.$(".npc-type-input").viewEditExchangable("val");
 			if ( !npcType )
 				return;
@@ -141,9 +141,12 @@
 					action:actions,
 					gender:gender
 				};
+			var target = $(event.currentTarget);
+			target.button("loading");
 			if ( this.currentNpc )	{
 				this.currentNpc.set(opt);
 				self.onCancelCreateNpc();
+				target.button("reset");
 			} else {
 				opt.createBy={
 						user:Global.currentUser.id,
@@ -151,7 +154,13 @@
 					}
 				this.npcCollection.create(opt,
 				{success:function(){
+					target.button("reset");
 					self.onCancelCreateNpc();
+					toastr["success"]("保存NPC成功");
+				},
+				error:function(){
+					target.button("reset");
+					toastr["error"]("无法保存NPC");
 				}});
 			}
 		},

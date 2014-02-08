@@ -166,7 +166,7 @@
 					this.$(".place-is-secret-check")[0].checked = true;
 			}
 		},
-		onConfirmCreatePlace:function(){
+		onConfirmCreatePlace:function(event){
 			var placeName = this.$(".place-name-input").val();
 			if ( !placeName )
 				return;
@@ -190,9 +190,12 @@
 					isSecret:isSecret,
 					meetableNpc: npcs	
 				};
+			var target = $(event.currentTarget);
+			target.button("loading");
 			if ( this.currentPlace ) {
 				this.currentPlace.set(opt);
 				self.onCancelCreatePlace();
+				target.button("reset");
 			} else {
 				opt.createBy = {
 					user:Global.currentUser.id,
@@ -200,7 +203,12 @@
 				};
 				this.placeCollection.create(opt,
 				{success:function(){
+					target.button("reset");
 					self.onCancelCreatePlace();
+					toastr["success"]("保存地点成功");
+				},error:function(){
+					target.button("reset");
+					toastr["error"]("无法保存地点");
 				}});
 			}
 		},

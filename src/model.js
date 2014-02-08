@@ -26,36 +26,42 @@
 		firebase: new Firebase(Global.FIREBASE_URL + "/world/"+Global.WORLD_ID + "/npc")
 	});
 
-	exports.Pc = Backbone.Model.extend({
+	exports.Pc = Backbone.Firebase.Model.extend({
+		firebase: new Firebase(Global.FIREBASE_URL + "/user/"+Global.currentUser.id+"/pc/"+Global.currentPcId),
 		defaults:function(){
 			return {
 				name:"",
-				gender: null,//"male", "female", null
-				user:null,
-				hand:[],
-				deck:[],
-				discard:[],
-				log:{},
-				where:null,
-				status:[]
+				portrait:"./web/images/default-portrait.jpg",
+				avatar:"./web/images/default-avatar.png",
+				gender: "unknow",//"male", "female", null
+				userId:0,
+				/*deck:[],
+				status:[],
+				quest:[],*/
+				where:{
+					world: Global.WORLD_ID,
+					x:0,
+					y:0
+				},
+				currentStory:{
+					storyId:0,
+					/*state:{},
+					hand:[],
+					path:[]*/
+				}
 			};
 		}
 	});
-	exports.PcCollection = Backbone.Firebase.Collection.extend({
-		model : exports.Pc,
-		firebase: new Firebase(Global.FIREBASE_URL + "/world/"+Global.WORLD_ID + "/pc")
-	});
 
-	exports.User = Backbone.Firebase.Model.extend({
-		firebase: new Firebase(Global.FIREBASE_URL + "/user/"+Global.currentUserId+"/profile"),
+	exports.UserProfile = Backbone.Firebase.Model.extend({
+		firebase: new Firebase(Global.FIREBASE_URL + "/user/"+Global.currentUser.id+"/profile"),
 		defaults:function(){
 			return {
+				portrait:"",
 				nickname:"",
 				fatePoint:0,
 				storyPoint:0,
-				playerCharacter:null,
-				storyCreated:{},
-				npcCreated:{}
+				currentPcId: -1
 			};
 		}
 	});
@@ -64,10 +70,13 @@
 		defaults:function(){
 			return {
 				where:null,
-				who:"",
+				who:{
+					npcId:0,
+					attr:""
+				},
 				timestamp:0,
-				how:"",
-				story:null
+				storyId:0,
+				storyPath:[]
 			};
 		}
 	});
@@ -76,25 +85,29 @@
 	exports.PLACE_TYPE = [
 		"城市","山谷","山顶","森林","海洋","小岛","村庄","草原","沙漠","小镇"
 		];
+	exports.TILE_TYPE_IMAGE_MAP = {
+		"城市":""
+	};
+
 	exports.CARD_TYPE_MAP = {
 		"status":"状态",
 		"skill":"技能",
 		"item":"物品",
 		"company":"同伴"
 	};
-	exports.BASE_SKILL = [
+	exports.BASIC_SKILL = [
 		"拳脚","兵器","口才","财力","容貌","骗术","魔法","头脑","运气"
 		];
 
-	exports.BASE_ITEM = [
+	exports.BASIC_ITEM = [
 		"拳脚","兵器","口才","财力","容貌","骗术","魔法","头脑","运气"
 		];
 	
-	exports.BASE_STATUS = [
+	exports.BASIC_STATUS = [
 		"拳脚","兵器","口才","财力","容貌","骗术","魔法","头脑","运气"
 		];
 	
-	exports.BASE_COMPANY = [
+	exports.BASIC_COMPANY = [
 		"拳脚","兵器","口才","财力","容貌","骗术","魔法","头脑","运气"
 		];
 
@@ -113,18 +126,18 @@
 		firebase: new Firebase(Global.FIREBASE_URL + "/world/"+Global.WORLD_ID + "/place")
 	});
 
-	exports.PlaceTile = Backbone.Model.extend({
+	exports.MapTile = Backbone.Model.extend({
 		defaults:function(){
 			return {
-				place:null,
+				placeId:0,
 				x:0,
 				y:0
 			};
 		}
 	});
-	exports.PlaceTileCollection = Backbone.Firebase.Collection.extend({
-		model : exports.PlaceTile,
-		firebase: new Firebase(Global.FIREBASE_URL + "/world/"+Global.WORLD_ID + "/placeTile")
+	exports.MapTileCollection = Backbone.Firebase.Collection.extend({
+		model : exports.MapTile,
+		firebase: new Firebase(Global.FIREBASE_URL + "/world/"+Global.WORLD_ID + "/map")
 	});
 
 	exports.Story = Backbone.Model.extend({
@@ -134,7 +147,6 @@
 				meetablePlace:[],
 				meetableNpc:[],//{attr:"",id:xx}
 				action:[],
-				segment:[],//text, 
 				praise:[],
 				comment:[],
 				createBy:{
@@ -142,8 +154,22 @@
 					time:0
 				}
 			};
+		},
+		
+		getSegmentModel : function(){
+			if ( !this.segmentModel ){
+				this.segmentModel = exports.newSegmentModel(this.id);
+			}
+			return this.segmentModel;
 		}
 	});
+
+	exports.newSegmentModel = function(id){
+		return new Backbone.Firebase.Model({},{
+					firebase: new Firebase(Global.FIREBASE_URL + "/world/"+Global.WORLD_ID + "/segment/"+id)
+		});
+	};
+
 	exports.StoryCollection = Backbone.Firebase.Collection.extend({
 		model : exports.Story,
 		firebase: new Firebase(Global.FIREBASE_URL + "/world/"+Global.WORLD_ID + "/story")
@@ -156,69 +182,28 @@
 				type:"",//skill, status, item, company
 				pic:"",
 				text:"",
-				effect:"",
-				cost:0,
 				extend:{}
 			};
 		}
 	});
-	exports.CardTemplateCollection = Backbone.Firebase.Collection.extend({
+	exports.CardTemplateCollection = Backbone.Collection.extend({
 		model : exports.CardTemplate,
-		firebase: new Firebase(Global.FIREBASE_URL + "/card")
+		//firebase: new Firebase(Global.FIREBASE_URL + "/world/"+Global.WORLD_ID + "/cardTemplate")
 	});
 
 	exports.Card = Backbone.Model.extend({
 		defaults:function(){
 			return {
 				cardId:0,
-				position:"",//deck , hand, display, discard
 				extend:{}
 			};
 		}
 	});
 
-	exports.CardCollection = Backbone.Firebase.Collection.extend({
+/*	exports.CardCollection = Backbone.Firebase.Collection.extend({
 		model : exports.CardTemplate,
 		firebase: new Firebase(Global.FIREBASE_URL + "/user/"+Global.currentUserId+"/cards")
 	});
+*/
 
-	/*exports.Segment = Backbone.Model.extend({
-		defaults:function(){
-			return {
-				type:"text",//text, result, check, choice
-				text:null,
-				result:[],
-				check:null,//check struct
-				choice:null //choice [{choiceLabel:"", segment:null}]
-			};
-		}
-	});
-
-	exports.Check = Backbone.Model.extend({
-		defaults:function(){
-			return {
-				subject:"",
-				dice: 0,
-				difficulty:0,
-				success:null, //success Segment
-				fail:null, //success Segment
-			};
-		}
-	});
-
-	exports.Result = Backbone.Model.extend({
-		defaults:function(){
-			return {
-				text:"",
-				getStatus:[],
-				loseStatus:[],
-				pay:[],
-				getCard:[],
-				getWound:0,
-				loseCard:[],
-				gotoPlace:null,
-				getFate:0
-			};
-		}
-	});*/
 });

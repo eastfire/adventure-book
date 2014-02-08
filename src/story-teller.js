@@ -315,6 +315,8 @@ define(function(require,exports,module){
 		},
 		initLayout:function(){
 			this.$el.html(this.template());
+			if ( this.model.title )
+				this.$(".story-title").html(this.model.title);
 			nextBtn = this.$(".next-segment").hide();
 			this.segment = this.$(".segment-teller");
 			this.restartBtn = this.$(".restart-story");

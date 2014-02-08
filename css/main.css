@@ -3,6 +3,13 @@
     cursor: pointer;
 }
 
+.css-animator {
+	-moz-transition: all 0.3s ease-in-out 0s;
+	-webkit-transition: all 0.3s ease-in-out 0s;
+	-o-transition: all 0.3s ease-in-out 0s;
+	-ms-transition: all 0.3s ease-in-out 0s;
+	transition: all 0.3s ease-in-out 0s;
+}
 
 /*npc-editor*/
 .npc-item {
@@ -84,4 +91,111 @@
 
 .result-selector {
 	height:20px;
+}
+
+
+/*board*/
+.board-view {
+	position:relative;
+	border: 1px dotted black;
+    bottom:0px;
+    width: 100%;
+}
+
+.board {
+	position:relative;
+	overflow:hidden;
+	height:100%;
+	widht:100%;
+}
+
+.map-tile {
+	position:absolute;
+    border: 1px dotted black;
+    height: 100px;
+    width: 100px;
+	background-size:cover;
+}
+
+.map-tile-label {
+	position:absolute;
+	bottom:0px;
+	background: rgba(0, 0, 0, 0.5);
+    text-align: center;
+    width: 100%;
+}
+
+.pc-avatar {
+	background-size: contain;
+	position: absolute;
+}
+
+
+/*card*/
+.card {
+	top: 25px;
+	position:absolute;
+	border: 1px solid black;
+	border-radius : 10px;
+	background-size:contain;
+	width:100px;
+	height:160px;
+}
+
+.card.selected {
+	top: 0px;
+	z-index:900;
+}
+
+.card-title {
+	position:absolute;
+	top:0px;
+	background: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    width: 100%;
+	color:black;
+}
+
+.card-text {
+	position:absolute;
+	bottom:0px;
+	background: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    width: 100%;
+	color:black;
+}
+
+
+/*hand*/
+.hand {
+	position:fixed;
+	border: 1px dotted black;
+	bottom:0;
+	left:5%;
+	width:90%;
+	height:200px;
+}
+
+.hand-toggle {
+    background: white;
+    height: 20px;
+    position: relative;
+    top: -20px;
+    width: 200px;
+	border-radius: 10px 10px 0 0;
+	border: 1px solid;
+	color: black;
+	text-align: center;
+	cursor: pointer;
+}
+
+.hand.hide-hand{
+	bottom:-200px;
+}
+
+.play-card-btn {
+	position:absolute;
+	bottom:0;
+	width:90px;
+	margin: 0 5px;
 }

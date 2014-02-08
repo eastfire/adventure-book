@@ -171,9 +171,21 @@ define(function(require,exports,module){
 			this.$(".story-preview").empty().hide();
 			this.currentStory = this.storyCollection.get(id);
 			this.renderStoryDetail(this.currentStory.toJSON());
+			this.renderSegment(this.currentStory.getSegmentModel());
+		},
+		renderSegment:function(segmentModel){
+			if ( segmentModel.get("segment") != null ){
+				var v = new SegmentEditor({model:segmentModel.get("segment"), isFirstSegment:true});
+				this.$(".segment-editor-block").append(v.render().el);
+			} else {
+				segmentModel.once("change",function(){
+					var v = new SegmentEditor({model:segmentModel.get("segment"), isFirstSegment:true});
+					this.$(".segment-editor-block").append(v.render().el);
+				},this);
+			}
 		},
 		renderStoryDetail:function(story){
-			this.$(".story-name-input").viewEditExchangable("option",{data:story?story.name:null});
+			this.$(".story-name-input").viewEditExchangable("option",{data:story?story.title:null});
 			var v;
 			this.$(".story-meetable-place-list").empty();
 			this.$(".story-meetable-npc-list").empty();
@@ -183,12 +195,11 @@ define(function(require,exports,module){
 				this.renderMeetablePlaces();
 				this.renderMeetableNpcs();
 				this.renderAction();
-				v = new SegmentEditor({model:story.segment, isFirstSegment:true});
+				
 			} else {
 				v = new SegmentEditor({isFirstSegment:true});
+				this.$(".segment-editor-block").append(v.render().el);
 			}
-			
-			this.$(".segment-editor-block").append(v.render().el);
 		},
 		
 		renderMeetablePlaces:function(){
@@ -231,7 +242,8 @@ define(function(require,exports,module){
 			var meetableNpc = this.getMeetableNpcs();
 			var actions = this.getActions();
 			var self = this;
-			return {					
+			return {
+					title:storyName,
 					meetablePlace:meetablePlace,
 					meetableNpc:meetableNpc,
 					action:actions,
@@ -241,18 +253,29 @@ define(function(require,exports,module){
 
 		onConfirmCreateStory:function(){
 			var opt = this.getStory();
+			var segment = opt.segment;
+			delete opt.segment;
 			var self = this;
+			this.$(".create-story-confirm").button("loading");
 			if ( this.currentStory ) {
 				this.currentStory.set(opt);
+				this.currentStory.getSegmentModel().set({segment: segment});
 				self.onCancelCreateStory();
+				this.$(".create-story-confirm").button("reset");
 			} else {
 				opt.createBy = {
 						user:Global.currentUser.id,
 						time:Firebase.ServerValue.TIMESTAMP
 					};
-				this.storyCollection.create(opt,
-				{success:function(){
+				var newStory = this.storyCollection.create(opt,
+				{success:function(model){
+					Model.newSegmentModel(newStory.id).set({segment: segment});
 					self.onCancelCreateStory();
+					self.$(".create-story-confirm").button("reset");
+					toastr["success"]("保存故事成功");
+				},error:function(){
+					self.$(".create-story-confirm").button("reset");
+					toastr["error"]("保存故事失败");
 				}});
 			}
 		},

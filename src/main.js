@@ -1,16 +1,48 @@
 define(function(require,exports,module){
 	var template = _.template(require("../layout/main.html"));
 	var Global = require("./global");
+
+	toastr.options = {
+	  "closeButton": false,
+	  "debug": false,
+	  "positionClass": "toast-top-full-width",
+	  "onclick": null,
+	  "showDuration": "300",
+	  "hideDuration": "1000",
+	  "timeOut": "3000",
+	  "extendedTimeOut": "1000",
+	  "showEasing": "swing",
+	  "hideEasing": "linear",
+	  "showMethod": "fadeIn",
+	  "hideMethod": "fadeOut"
+	}
+
 	$("body").html(template());
+
+	var handleError = function(error){
+		switch(error.code) {
+			case 'INVALID_EMAIL':
+				toastr["error"]("不是合法的电子邮件格式");
+			break;
+			case 'INVALID_USER':
+				toastr["error"]("用户不存在");
+			break;
+			case 'INVALID_PASSWORD':
+				toastr["error"]("密码错误");
+			break;
+			case 'EMAIL_TAKEN':
+				toastr["error"]("用户已存在");
+			break;
+			default:
+				console.log("error:"+error.code);
+		}
+	}
 
 	var myref = new Firebase(Global.FIREBASE_URL);
 	var auth = new FirebaseSimpleLogin( myref, function(error, user) {
 		if (error) {
-			switch(error.code) {
-				case 'INVALID_EMAIL':
-				case 'INVALID_PASSWORD':
-				default:
-			}
+			$("#user-login-btn").button('reset');
+			handleError(error);
 		} else if (user) {
 			onUserLogin(user);
 		} else {
@@ -30,6 +62,8 @@ define(function(require,exports,module){
 		$("#user-register").hide();
 		$("#user-logout").show();
 		$("#user-profile").show();
+
+		require("./loading").startLoading();
 	}
 
 	var showDialog = function(){
@@ -41,54 +75,49 @@ define(function(require,exports,module){
 	}
 	$("#user-login").on("click",showDialog);
 	$("#user-register").on("click",showDialog);
-	$("#user-register-btn").on("click",function(){
+	$("#user-register-btn").button().on("click",function(){
 		var email = $("#user-email").val().trim();
 		var password = $("#user-password").val();
+		var remember = $("#remember-me").prop("checked");
 		if ( !email ) {
-			$("#user-email").addClass("has-error");
+			toastr["error"]("请输入电子邮件帐号");
 			return;
 		}
-		$("#user-email").removeClass("has-error");
 		if ( !password ){
-			$("#user-password").addClass("has-error");
+			toastr["error"]("请输入密码");
 			return;
 		}
-		$("#user-password").removeClass("has-error");
+		$("user-register-btn").button('loading');
 		auth.createUser(email, password, function(error, user) {
+			$("user-register-btn").button('reset');
 			if (error) {
-				switch(error.code) {
-					case 'EMAIL_TAKEN':
-						//用户已存在
-					break;
-					default:
-						console.log("error:"+error.code);
-				}
+				handleError(error);
 			} else {
 				auth.login('password', {
 					email: email,
 					password: password,
-					//rememberMe: true
+					rememberMe: remember
 				});
 			}
 		});
 	});
-	$("#user-login-btn").on("click",function(){
+	$("#user-login-btn").button().on("click",function(){
 		var email = $("#user-email").val().trim();
+		var remember = $("#remember-me").prop("checked");
 		var password = $("#user-password").val();
 		if ( !email ) {
-			$("#user-email").addClass("has-error");
+			toastr["error"]("请输入电子邮件帐号");
 			return;
 		}
-		$("#user-email").removeClass("has-error");
 		if ( !password ){
-			$("#user-password").addClass("has-error");
+			toastr["error"]("请输入密码");
 			return;
 		}
-		$("#user-password").removeClass("has-error");
+		$("#user-login-btn").button('loading');
 		auth.login('password', {
 			email: email,
 			password: password,
-			//rememberMe: true
+			rememberMe: remember
 		});
 	});
 
@@ -116,4 +145,12 @@ define(function(require,exports,module){
 		var storyEditor = new StoryEditor();
 		$("#main-board").append(storyEditor.render().el);
 	});
+
+	$("#edit-map").on("click",function(){
+		$("#main-board").empty();
+		var Board = require("./board").Board;
+		var board = new Board();
+		$("#main-board").append(board.render().el);
+	});
+
 });
