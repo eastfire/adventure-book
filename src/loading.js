@@ -38,10 +38,7 @@ define(function(require,exports,module){
 				firebase: new Firebase(Global.FIREBASE_URL + "/user/"+Global.currentUser.id+"/pc/"+Global.currentPcId)
 			});
 			Global.currentPc.once("change",function(model){
-				var HandView = require("./player-hand").HandView;
-				var handView = new HandView({model:model});
-				$("body").append(handView.render().el);
-				handView.renderCards();
+				$("#adventure-book-action-bar").show();
 			});
 		});		
 	}

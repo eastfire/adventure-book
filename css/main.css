@@ -11,6 +11,10 @@
 	transition: all 0.3s ease-in-out 0s;
 }
 
+#start-adventure{
+	cursor:pointer;
+}
+
 /*npc-editor*/
 .npc-item {
 	cursor:pointer;
@@ -165,6 +169,13 @@
 	color:black;
 }
 
+/*story-head*/
+
+.action-select-item {
+	float:left;
+	cursor:pointer;
+	border:1px solid black;
+}
 
 /*hand*/
 .hand {
@@ -198,4 +209,31 @@
 	bottom:0;
 	width:90px;
 	margin: 0 5px;
+}
+
+/*adjustment-view*/
+.adjustment-view {
+	position:fixed;
+	bottom:250;
+	left:0;
+}
+
+.adjustment-view.hide-adjustment {
+    left: -150px;
+}
+
+.adjustment-list {
+	width:150px;
+    border: 1px solid;
+    display: inline-block;
+    float: left;
+    min-height: 102px;
+}
+
+.adjustment-toggle {
+	border: 1px solid black;
+    border-radius: 0 10px 10px 0;
+    cursor: pointer;
+    display: inline-block;
+    width: 20px;
 }

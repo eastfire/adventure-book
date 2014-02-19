@@ -26,10 +26,10 @@ define(function(require,exports,module){
 		render:function(){
 			var text = this.model;
 			text = text.replace("[[地点]]", this.options.status.place);
-			text = text.replace("[[角色]]", this.options.status.npc.get("type"));
+			text = text.replace("[[角色]]", this.options.status.npc.getDisplayName());
 			text = text.replace("[[形容词]]", this.options.status.attr);
 			text = text.replace("[[动作]]", this.options.status.action);
-			text = text.replace("[[TA]]", Model.NPC_GENDER[this.options.status.npc.get("gender")]);
+			text = text.replace("[[TA]]", Model.NPC_GENDER[this.options.status.gender]);
 			this.$el.text(text);
 			
 			this.trigger("finish");
@@ -60,6 +60,8 @@ define(function(require,exports,module){
 			this.checkHint = this.$(".check-segment-hint");
 			this.checkCardHint = this.$(".check-segment-card-hint");
 			this.checkResultSegment = this.$(".check-result-segment");
+			this.jumpToSuccess = this.$(".jump-to-check-success");
+			this.jumpToFail = this.$(".jump-to-check-fail");
 			this.$(".check-result-label").hide();
 
 			var self = this;
@@ -69,7 +71,7 @@ define(function(require,exports,module){
 			}
 
 			if ( this.model.hide ){
-				this.checkHint.html("即将发生某种检定。");
+				this.checkHint.html("即将发生一些检定。");
 			} else {
 				var str; 
 				if ( this.model.dice === 0 ){
@@ -112,9 +114,12 @@ define(function(require,exports,module){
 			this.$(".check-actions").remove();
 			var total = 0;
 			if ( !this.isPreview ){
-				var adjust = Global.currentUser.adjustment[this.model.type];
-				if ( adjust != 0){
-					total = adjust;
+				var adjustments = Global.currentPc.get("currentStory").adjustment;
+				if ( adjustments ){
+					var adjust = adjustments[this.model.type];
+					if ( adjust != 0){
+						total = adjust;
+					}
 				}
 			}
 			for (var i = 0; i < this.model.dice; i++ ){
@@ -286,15 +291,29 @@ define(function(require,exports,module){
 			}
 			this.options = options;
 			this.isPreview = options.isPreview;
-			var meetable = this.genMeetableNpc();
+			
+			options.status = options.status || {};
+
+			var meetable
+			if ( this.isPreview ){
+				meetable = this.genMeetableNpc();
+			}
+			
 			this.status = {
-				attr : options.attr || meetable.attr || this.genAttr(meetable),
-				npc : options.npc || Global.npcCollection.get(meetable.npcId),
-				place : options.place || this.genPlace(),
-				action : options.action || this.genAction(),
+				attr : options.status.attr || meetable.attr || this.genAttr(meetable),
+				npc : Global.npcCollection.get(options.status.npcId || meetable.npcId),
+				gender : options.status.gender || this.genGender(Global.npcCollection.get(meetable.npcId)),
+				place : ( options.status.placeId && Global.placeCollection.get(options.status.placeId).get("name") ) || this.genPlace(),
+				action : options.status.action || this.genAction(),
 			};
 			
 			this.initLayout();
+		},
+		genGender:function(npc){
+			if ( npc.get("gender") === "unknow" ){
+				return Math.random() > 0.5 ? "he" : "she";
+			}
+			return npc.get("gender");
 		},
 		genPlace:function(){
 			var meetablePlace = this.model.meetablePlace[Math.floor( this.model.meetablePlace.length * Math.random() )];

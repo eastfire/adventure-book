@@ -37,7 +37,7 @@ define(function(require,exports,module){
 		events:{
 			"click .card":"onSelectCard",
 			"click .play-card-btn":"onPlayCard",
-			"click .hand-toggle":"onToggleHand"
+			"click .hand-toggle":"onToggle"
 		},
 		initialize:function(options){
 			this.options = options;
@@ -83,7 +83,7 @@ define(function(require,exports,module){
 				i ++;
 			},this);
 		},
-		onToggleHand:function(){
+		onToggle:function(){
 			this.$el.toggleClass("hide-hand");
 		},
 		onSelectCard:function(event){
@@ -116,14 +116,30 @@ define(function(require,exports,module){
 	});
 
 	exports.AdjustmentView = Backbone.View.extend({
+		events:{
+			"click .adjustment-toggle":"onToggle"
+		},
 		initialize:function(options){
 			this.options = options;
+			this.model.on("change",this.render, this);
 		},
-		render:function(){
-			this.$el.html("<ul class='adjustment-list'></ul>");
-			this.$el.addClass("adjustment-view");
-
+		render:function(){				
+			this.$el.html("<ul class='adjustment-list group-list'></ul><div class='adjustment-toggle'>当前修正值</div>");
+			this.$el.addClass("adjustment-view css-animator");
+			if ( this.model.get("currentStory") ){
+				var adjustments = this.model.get("currentStory").adjustment;
+				for ( var key in adjustments ){
+					if ( adjustments[key] ){
+						this.$(".adjustment-list").append("<li class='list-group-item'>"+key+" "+(adjustments[key]>0?"+":"")+adjustments[key]+"</li>");
+					}
+				}
+			} else {
+				this.$(".adjustment-list").empty();
+			}
 			return this;
-		}
+		},
+		onToggle:function(){
+			this.$el.toggleClass("hide-adjustment");
+		},
 	});
 });

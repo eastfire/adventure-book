@@ -19,6 +19,9 @@
 					time: 0
 				}
 			};
+		},
+		getDisplayName:function(){
+			return this.get("specialName") || this.get("type")
 		}
 	});
 	exports.NpcCollection = Backbone.Firebase.Collection.extend({
@@ -33,7 +36,7 @@
 				name:"",
 				portrait:"./web/images/default-portrait.jpg",
 				avatar:"./web/images/default-avatar.png",
-				gender: "unknow",//"male", "female", null
+				gender: null,//"male", "female", null
 				userId:0,
 				/*deck:[],
 				status:[],
@@ -41,7 +44,8 @@
 				where:{
 					world: Global.WORLD_ID,
 					x:0,
-					y:0
+					y:0,
+					placeId: 0
 				},
 				currentStory:{
 					storyId:0,

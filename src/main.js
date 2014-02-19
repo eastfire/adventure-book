@@ -1,4 +1,7 @@
 define(function(require,exports,module){
+	window.clone = function(obj){
+		return JSON.parse( JSON.stringify(obj) );
+	}
 	var template = _.template(require("../layout/main.html"));
 	var Global = require("./global");
 
@@ -52,6 +55,7 @@ define(function(require,exports,module){
 			$("#user-register").show();
 			$("#user-logout").hide();
 			$("#user-profile").hide();
+			$("#adventure-book-action-bar").hide();
 		}
 	});
 
@@ -152,5 +156,11 @@ define(function(require,exports,module){
 		var board = new Board();
 		$("#main-board").append(board.render().el);
 	});
-
+	
+	$("#start-adventure").on("click",function(){
+		$("#main-board").empty();
+		var AdventureView = require("./adventure-view").AdventureView;
+		var v = new AdventureView();
+		$("#main-board").append(v.render().el);
+	});
 });
