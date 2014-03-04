@@ -94,6 +94,8 @@
 			this.$(".npc-type-input").viewEditExchangable("option",{
 				data:null
 			});
+			this.$(".npc-gender .active").removeClass("active");
+			this.$(".npc-gender #unknow").parent().addClass("active");
 			//this.$(".npc-type-input").val("");
 			this.currentNpc = null;
 		},

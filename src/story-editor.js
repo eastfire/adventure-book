@@ -122,6 +122,33 @@ define(function(require,exports,module){
 			this.onAddAllPlace();
 			this.onAddAllNpc();
 			this.onAddAllStory();
+
+			if ( window.currentEncounterStatus ){
+				this.$(".story-detail").show();
+				this.currentStory = null;
+				var view = new MeetablePlaceItem({model:{
+						placeId: window.currentEncounterStatus.placeId
+					}});
+				this.$(".story-meetable-place-list").append(view.render().el);
+				
+				view = new MeetableNpcItem({model:{
+					npcId: window.currentEncounterStatus.npcId,
+					attr: window.currentEncounterStatus.attr
+				}, npcNames:npcNames});
+				this.$(".story-meetable-npc-list").append(view.render().el);	
+				this.refreshActionNames();
+				view.on("npc-selected",function(npcId){
+					self.refreshActionNames();
+				});
+				
+				var view = new ActionItem({model:window.currentEncounterStatus.action});
+				this.$(".story-action-list").append(view.render().el);
+
+				var view = new SegmentEditor({isFirstSegment:true});
+				this.$(".segment-editor-block").append(view.render().el);
+
+				window.currentEncounterStatus = null;
+			}
 		},
 		initLayout:function(){
 			this.$el.html(this.template());

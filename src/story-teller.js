@@ -114,7 +114,7 @@ define(function(require,exports,module){
 			this.$(".check-actions").remove();
 			var total = 0;
 			if ( !this.isPreview ){
-				var adjustments = Global.currentPc.get("currentStory").adjustment;
+				var adjustments = Global.currentPc.get("adjustment");
 				if ( adjustments ){
 					var adjust = adjustments[this.model.type];
 					if ( adjust != 0){
@@ -333,9 +333,24 @@ define(function(require,exports,module){
 			return this.model.action[Math.floor( this.model.action.length * Math.random() )];
 		},
 		initLayout:function(){
+			var self = this;
 			this.$el.html(this.template());
 			if ( this.model.title )
 				this.$(".story-title").html(this.model.title);
+
+			if ( this.model.createBy ){
+				var creator = new Model.UserProfile({},{
+					firebase: new Firebase(Global.FIREBASE_URL + "/user/"+this.model.createBy.user+"/profile")
+				});
+				if ( creator.get("nickname") ) {
+					self.$(".story-create-by").html("本故事由 "+creator.get("nickname")+" 提供");
+				} else {
+					creator.once("change",function(model){
+						self.$(".story-create-by").html("本故事由"+model.get("nickname")+"提供");
+					});
+				}
+			}
+
 			nextBtn = this.$(".next-segment").hide();
 			this.segment = this.$(".segment-teller");
 			this.restartBtn = this.$(".restart-story");

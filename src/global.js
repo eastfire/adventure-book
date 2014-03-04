@@ -3,7 +3,7 @@ define(function(require,exports,module){
 	exports.WORLD_ID = "1";
 
 	exports.centerX = 500;
-	exports.centerY = 300;
+	exports.centerY = 250;
 	exports.MAP_TILE_WIDTH = 100;
 	exports.MAP_TILE_HEIGHT = 100;
 	exports.AVATAR_WIDTH = 60;

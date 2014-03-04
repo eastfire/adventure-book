@@ -11,11 +11,24 @@
 	transition: all 0.3s ease-in-out 0s;
 }
 
+.unselectable {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
 #start-adventure{
 	cursor:pointer;
 }
 
 /*npc-editor*/
+.npc-list {
+	overflow:scroll;
+	height:600px;
+}
+
 .npc-item {
 	cursor:pointer;
 }
@@ -35,6 +48,11 @@
 
 
 /*place-editor*/
+.place-list {
+	overflow:scroll;
+	height:600px;
+}
+
 .place-item {
 	cursor:pointer;
 }
@@ -57,6 +75,11 @@
 }
 
 /*story-editor*/
+.story-list {
+	overflow:scroll;
+	height:600px;
+}
+
 .meetable-place-item , .story-action-item{
 	height:20px;
 	text-align: center;
@@ -97,6 +120,9 @@
 	height:20px;
 }
 
+.story-create-by {
+
+}
 
 /*board*/
 .board-view {
@@ -108,6 +134,10 @@
 
 .board {
 	position:relative;
+}
+
+.board-border {
+	position: relative;
 	overflow:hidden;
 	height:100%;
 	widht:100%;
@@ -134,7 +164,45 @@
 	position: absolute;
 }
 
+.pc-avatar .walk-direction {
+	position: absolute;
+	width:40px;
+	height:40px;
+	background:url("../web/images/arrow.png") no-repeat scroll 0 0 / contain  transparent;
+}
 
+.pc-avatar .walk-direction.hide, .pc-avatar.moving .walk-direction , .pc-avatar.moving .start-encounter{
+	display:none;
+}
+
+.pc-avatar .walk-direction.left {
+    left: -40px;
+    top: 10px;
+}
+
+.pc-avatar .walk-direction.up {
+    left: 10px;
+    top: -40px;
+	transform: rotate(90deg);
+}
+
+.pc-avatar .walk-direction.right {
+    left: 60px;
+    top: 10px;
+	transform: rotate(180deg);
+}
+
+.pc-avatar .walk-direction.down {
+    left: 10px;
+    top: 60px;
+	transform: rotate(270deg);
+}
+
+.pc-avatar .start-encounter {
+	left: 60px;
+    top: -30px;
+	position:absolute;
+}
 /*card*/
 .card {
 	top: 25px;
@@ -144,6 +212,7 @@
 	background-size:contain;
 	width:100px;
 	height:160px;
+	cursor:pointer;
 }
 
 .card.selected {
@@ -179,6 +248,7 @@
 
 /*hand*/
 .hand {
+	background:white;
 	position:fixed;
 	border: 1px dotted black;
 	bottom:0;
@@ -213,6 +283,7 @@
 
 /*adjustment-view*/
 .adjustment-view {
+	background:white;
 	position:fixed;
 	bottom:250;
 	left:0;
@@ -236,4 +307,32 @@
     cursor: pointer;
     display: inline-block;
     width: 20px;
+}
+
+/*profile-editor*/
+.user-portrait {
+	width:50px;
+	height:50px;
+}
+
+.user-nickname-edit{
+	height:20px;
+}
+
+.user-portrait-url-edit {
+	height:20px;
+}
+
+/*pc-editor*/
+.pc-name-edit, .pc-portrait-url-edit, .pc-avatar-url-edit{
+	height:20px;
+}
+
+.pc-portrait {
+	widht:50px;
+	height:50px;
+}
+.pc-avatar {
+	width:100px;
+	height:100px;
 }

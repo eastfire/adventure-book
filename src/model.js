@@ -36,7 +36,7 @@
 				name:"",
 				portrait:"./web/images/default-portrait.jpg",
 				avatar:"./web/images/default-avatar.png",
-				gender: null,//"male", "female", null
+				gender: "unknow",//"male", "female", unknow
 				userId:0,
 				/*deck:[],
 				status:[],
@@ -47,6 +47,8 @@
 					y:0,
 					placeId: 0
 				},
+				hand:[],
+				adjustment:{},
 				currentStory:{
 					storyId:0,
 					/*state:{},
@@ -65,7 +67,7 @@
 				nickname:"",
 				fatePoint:0,
 				storyPoint:0,
-				currentPcId: -1
+				currentPcId: 1
 			};
 		}
 	});

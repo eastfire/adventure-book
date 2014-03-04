@@ -41,8 +41,6 @@ define(function(require,exports,module){
 					npcId: meetable.npcId,
 					attr : npc.get("attr")[Math.floor( npc.get("attr").length * Math.random() )],
 					gender : npc.get("gender") === "unknow" ? (Math.random() > 0.5 ? "he" : "she") : npc.get("gender"),
-					adjustment: {},
-					hand : genHand(),
 					placeId : pc.get("where").placeId
 				}, status:"encounter"
 			});
@@ -138,11 +136,14 @@ define(function(require,exports,module){
 		},
 		initialize:function(){
 			this.$el.html("<div class='encounter-view'></div><div class='story-view'></div><div class='map-view'></div>");
+			this.mapView = this.$(".map-view");
+			this.encounterView = this.$(".encounter-view");
+			this.storyView = this.$(".story-view");
 		},
 		render:function(){
-			this.$(".encounter-view").hide();
-			this.$(".story-view").hide();
-			this.$(".map-view").hide();
+			this.encounterView.hide();
+			this.storyView.hide();
+			this.mapView.hide();
 			switch( Global.currentPc.get("status") ){
 				case "world":
 					this.renderMap();
@@ -169,14 +170,14 @@ define(function(require,exports,module){
 			return this;
 		},
 		renderEncounter:function(){
-			this.$(".map-view").empty();
-			this.$(".encounter-view").show();
+			this.mapView.empty();
+			this.encounterView.show();
 
 			this.status = generateStoryStatus(Global.currentPc);
 			var place = Global.placeCollection.get(this.status.placeId);
 			var npc = Global.npcCollection.get(this.status.npcId);
 
-			this.$(".encounter-view").html(this.encounterTemplate({
+			this.encounterView.html(this.encounterTemplate({
 				placeName:place.get("name"),
 				npcAttr:this.status.attr,
 				npcName:npc.getDisplayName()
@@ -187,8 +188,8 @@ define(function(require,exports,module){
 			},this);	
 		},
 		renderStory:function(){
-			this.$(".encounter-view").empty();
-			this.$(".story-view").show();
+			this.encounterView.empty();
+			this.storyView.show();
 			
 			this.status = clone(Global.currentPc.get("currentStory"));
 			this.currentStory = Global.storyCollection.get(this.status.storyId);
@@ -203,13 +204,41 @@ define(function(require,exports,module){
 			}
 		},
 		onSelectAction:function(event){
+			var self = this;
 			var target = $(event.currentTarget);
 			this.status.action = target.attr("id");
+			this.encounterView.empty();
+			this.storyView.show();
+			this.storyView.append("<div class='generating-story'>正在生成故事</div>");
 			this.status.storyId = generateStoryId(this.status);
 
 			if ( this.status.storyId == 0 )	{
-				toastr["warning"]("没有找到对应的故事");
-				//TODO user edit
+				$("#no-story-dialog").modal({
+					show:true
+				});
+				$("#skip-encounter-btn").unbind("click").on("click",function(){
+					self.encounterView.empty();
+					Global.currentPc.set({
+						currentStory: {
+							storyId:0
+						},
+						status:"world"} );
+					self.renderMap();
+					$("#no-story-dialog").modal("hide");
+				});
+				$("#make-my-story-btn").unbind("click").on("click",function(){
+					self.encounterView.empty();
+					window.currentEncounterStatus = self.status;
+					Global.currentPc.set({
+						currentStory: {
+							storyId:0
+						},
+						status:"world"} );
+					self.renderMap();
+					$("#no-story-dialog").modal("hide");
+
+					window.showStoryEditor();
+				});
 				return;
 			}
 			
@@ -218,27 +247,36 @@ define(function(require,exports,module){
 				status:"story"
 			} );
 
+			this.storyView.empty();
 			this.renderStory();
 		},
 		renderStorySegment:function(segmentModel){
 			var StoryTeller = require("./story-teller").StoryTeller;
 
-			var storyView = new StoryTeller({model:segmentModel, isPreview:false, pc: Global.currentPc, status:this.status});
+			var storyView = new StoryTeller({model:_.extend(segmentModel.toJSON(),{
+				title: this.currentStory.get("title"),
+				createBy: this.currentStory.get("createBy")
+			}), isPreview:false, pc: Global.currentPc, status:this.status});
 			
-			this.$(".story-view").append(storyView.render().el);
+			this.storyView.append(storyView.render().el);
 			var self = this;
 			storyView.on("finish",function(){
 				Global.currentPc.set({
 					currentStory: {},
-					status:"world"} );
+					status:"world" } );
 				self.renderMap();
 			});
 		},
 		renderMap:function(){
-			this.$(".story-view").empty();
-			this.$(".map-view").show();
+			this.storyView.empty();
+			this.mapView.show();
+			var Board = require("./board").Board;
+			var board = new Board();
+			this.mapView.append(board.render().el);
 
-			this.$(".map-view").html("<button class='start-encounter'>新的遭遇</button>");
+			Global.currentPc.set({
+				adjustment: {},
+				hand:genHand() } );
 		},
 		onStartEncounter:function(){
 			Global.currentPc.set({
@@ -246,4 +284,6 @@ define(function(require,exports,module){
 			this.renderEncounter();
 		}
 	});
+
+	
 });

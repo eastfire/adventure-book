@@ -22,6 +22,12 @@ define(function(require,exports,module){
 
 	$("body").html(template());
 
+	var clearMainboard = function(){
+		$(".hand").remove();
+		$(".adjustment-view").remove();
+		$("#main-board").empty();
+	}
+
 	var handleError = function(error){
 		switch(error.code) {
 			case 'INVALID_EMAIL':
@@ -50,6 +56,7 @@ define(function(require,exports,module){
 			onUserLogin(user);
 		} else {
 		// user is logged out
+			clearMainboard();
 			Global.currentUser = null;
 			$("#user-login").show();
 			$("#user-register").show();
@@ -97,6 +104,17 @@ define(function(require,exports,module){
 			if (error) {
 				handleError(error);
 			} else {
+				var usersRef = new Firebase(Global.FIREBASE_URL + "/user/");
+				usersRef.push({
+					id:user.id,
+					inuse:true,
+					pc:[{
+						userId:user.id
+					}],
+					profile:{
+						currentPcId:1
+					}
+				});
 				auth.login('password', {
 					email: email,
 					password: password,
@@ -129,38 +147,80 @@ define(function(require,exports,module){
 		auth.logout();
 	});
 
-	$("#edit-npc").on("click",function(){
-		$("#main-board").empty();
+	window.showNPCEditor = function(){
+		clearMainboard();
 		var NpcEditor = require("./npc-editor").NpcEditor;
 		var npcEditor = new NpcEditor();
 		$("#main-board").append(npcEditor.render().el);
-	});
+	}
 
-	$("#edit-place").on("click",function(){
-		$("#main-board").empty();
+	window.showPlaceEditor = function(){
+		clearMainboard();
 		var PlaceEditor = require("./place-editor").PlaceEditor;
 		var placeEditor = new PlaceEditor();
 		$("#main-board").append(placeEditor.render().el);
-	});
+	}
 
-	$("#edit-story").on("click",function(){
-		$("#main-board").empty();
+	window.showStoryEditor = function(){
+		clearMainboard();
 		var StoryEditor = require("./story-editor").StoryEditor;
 		var storyEditor = new StoryEditor();
 		$("#main-board").append(storyEditor.render().el);
-	});
+	}
 
-	$("#edit-map").on("click",function(){
-		$("#main-board").empty();
+	window.showMapEditor = function(){
+		clearMainboard();
 		var Board = require("./board").Board;
 		var board = new Board();
 		$("#main-board").append(board.render().el);
-	});
-	
-	$("#start-adventure").on("click",function(){
-		$("#main-board").empty();
+	}
+
+	window.showProfileEditor = function(){
+		clearMainboard();
+		var ProfileEditor = require("./profile-editor").ProfileEditor;
+		var view = new ProfileEditor({model:Global.currentUserProfile});
+		$("#main-board").append(view.render().el);
+	}
+
+	window.showPCEditor = function(){
+		clearMainboard();
+		var PCEditor = require("./pc-editor").PCEditor;
+		var view = new PCEditor({model:Global.currentPc});
+		$("#main-board").append(view.render().el);
+	}
+
+	window.showAdventureView = function(){
+		clearMainboard();
 		var AdventureView = require("./adventure-view").AdventureView;
 		var v = new AdventureView();
 		$("#main-board").append(v.render().el);
+	}
+
+	$("#edit-npc").on("click",function(){
+		showNPCEditor();
+	});
+
+	$("#edit-place").on("click",function(){
+		showPlaceEditor();
+	});
+
+	$("#edit-story").on("click",function(){
+		showStoryEditor();
+	});
+
+	$("#edit-map").on("click",function(){
+		showMapEditor();
+	});
+
+	$("#user-profile").on("click",function(){
+		showProfileEditor();
+	});
+
+	$("#my-pc").on("click",function(){
+		showPCEditor();
+	});
+	
+	$("#start-adventure").on("click",function(){
+		showAdventureView();
 	});
 });

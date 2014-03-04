@@ -12,35 +12,35 @@
 		<nav class="collapse navbar-collapse" role="navigation">
 			<ul id='adventure-book-action-bar' class="nav navbar-nav" style='display:none'>
 				<li>
-					<a id='my-pc'>我的角色</a>
+					<a id='my-pc' class='unselectable'>我的角色</a>
 				</li>
 				<li>
-					<a id='start-adventure'>开始冒险</a>
+					<a id='start-adventure' class='unselectable'>开始冒险</a>
 				</li>
 				<li>
-					<a id='edit-npc'>编辑NPC</a>
+					<a id='edit-npc' class='unselectable'>编辑NPC</a>
 				</li>
 				<li>
-					<a id='edit-place'>编辑地点</a>
+					<a id='edit-place' class='unselectable'>编辑地点</a>
 				</li>				
 				<li>
-					<a id='edit-story'>编辑故事</a>
+					<a id='edit-story' class='unselectable'>编辑故事</a>
 				</li>
 				<li>
-					<a id='edit-map'>世界地图</a>
+					<a id='edit-map' class='unselectable'>编辑地图</a>
 				</li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li id='user-login'>
+				<li id='user-login' class='unselectable'>
 					<a ><span class='glyphicon glyphicon-log-in'>登录</span></a>
 				</li>
-				<li id='user-register'>
+				<li id='user-register' class='unselectable'>
 					<a ><span class='glyphicon glyphicon-flash'>注册</span></a>
 				</li>
-				<li id='user-profile' style='display:none'>
+				<li id='user-profile' style='display:none' class='unselectable'>
 					<a ><span class='glyphicon glyphicon-user'>我的帐号</span></a>
 				</li>
-				<li id='user-logout' style='display:none'>
+				<li id='user-logout' style='display:none' class='unselectable'>
 					<a ><span class='glyphicon glyphicon-log-out'>登出</span></a>
 				</li>
 			</ul>
@@ -51,32 +51,64 @@
 </div>
 
 <div class="modal fade" id="login-register-dialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="myModalLabel">注册/登录</h4>
-      </div>
-      <div class="modal-body">
-		<div class="input-group">
-			  <span class="input-group-addon glyphicon glyphicon-user"></span>
-			  <input type="text" class="form-control" placeholder="电子邮件帐号" id='user-email'/>
-		</div>
-		<div class="input-group">
-			  <span class="input-group-addon glyphicon glyphicon-lock"></span>
-			  <input type="password" class="form-control" placeholder="密码" id='user-password'/>
-		</div>
-		<div class="input-group">
-			<span class="input-group-addon">
-				<input type="checkbox" id="remember-me"/>
-			</span>
-			<label class="form-control">记住我</label>
-		</div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-success" id='user-register-btn' data-loading-text="注册中..."><span class='glyphicon glyphicon-flash'>注册</span></button>
-        <button type="button" class="btn btn-primary" id='user-login-btn' data-loading-text="登录中..."><span class='glyphicon glyphicon-log-in'>登录</span></button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">注册/登录</h4>
+			</div>
+			<div class="modal-body">
+				<div class="input-group">
+					<span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+					<input type="text" class="form-control" placeholder="电子邮件帐号" id='user-email'/>
+				</div>
+				<div class="input-group">
+					<span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+					<input type="password" class="form-control" placeholder="密码" id='user-password'/>
+				</div>
+				<div class="input-group">
+					<span class="input-group-addon">
+						<input type="checkbox" id="remember-me"/>
+					</span>
+					<label class="form-control">记住我</label>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-success" id='user-register-btn' data-loading-text="注册中..."><span class='glyphicon glyphicon-flash'>注册</span></button>
+				<button type="button" class="btn btn-primary" id='user-login-btn' data-loading-text="登录中..."><span class='glyphicon glyphicon-log-in'>登录</span></button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="loading-dialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="myModalLabel">请稍候</h4>
+			</div>
+			<div class="modal-body">
+				<h4 id="loading-content"></h4>
+			</div>
+			<div class="modal-footer">
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="no-story-dialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">				
+				<h4 class="modal-title" id="myModalLabel">没有可用的故事</h4>
+			</div>
+			<div class="modal-body">
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-success" id='skip-encounter-btn' ><span class='glyphicon glyphicon-forward'>跳过本次遭遇</span></button>
+				<button type="button" class="btn btn-primary" id='make-my-story-btn'><span class='glyphicon glyphicon-pencil'>我来写个故事</span></button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->

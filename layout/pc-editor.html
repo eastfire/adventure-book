@@ -1,0 +1,44 @@
+<div class='row'>
+	<form class="form-horizontal">
+		<div class="form-group">
+			<label class='col-sm-1'>角色名：</label>
+			<div class='col-sm-10 pc-name-edit'></div>
+		</div>
+		<div class="form-group">
+			<label class='col-sm-1'>角色性别：</label>
+			<div class="col-sm-8">
+				<div class="btn-group pc-gender" data-toggle="buttons">
+					<label class="btn btn-primary">
+						<input type="radio" name="options" id="unknow">未知
+					</label>
+					<label class="btn btn-primary">
+						<input type="radio" name="options" id="he">男
+					</label>
+					<label class="btn btn-primary">
+						<input type="radio" name="options" id="she">女
+					</label>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class='col-md-1'>
+				<img class='pc-portrait'  onerror='if ( this.src=="./web/images/default-portrait.jpg" ) return;this.src="./web/images/default-portrait.jpg";'/>
+			</div>
+			<div class="form-group">
+				<label class='col-sm-2'>角色头像URL：</label>
+				<div class='col-md-8 pc-portrait-url-edit'></div>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class='col-md-1'>
+				<img class='pc-avatar'  onerror='if ( this.src=="./web/images/default-avatar.png" ) return;this.src="./web/images/default-avatar.png";'/>
+			</div>
+			<div class="form-group">
+				<label class='col-sm-2'>角色化身URL：</label>
+				<div class='col-md-8 pc-avatar-url-edit'></div>
+			</div>
+		</div>
+	</form>
+	
+	<button class='next-step btn btn-primary' style='display:none'><span class='glyphicon glyphicon-play'></span>下一步</button>
+</div>
