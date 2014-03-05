@@ -38,14 +38,13 @@
 				avatar:"./web/images/default-avatar.png",
 				gender: "unknow",//"male", "female", unknow
 				userId:0,
+				status:"world",
 				/*deck:[],
-				status:[],
 				quest:[],*/
 				where:{
-					world: Global.WORLD_ID,
+					worldId: Global.WORLD_ID,
 					x:0,
-					y:0,
-					placeId: 0
+					y:0
 				},
 				hand:[],
 				adjustment:{},

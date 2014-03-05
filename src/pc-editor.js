@@ -85,6 +85,7 @@ define(function(require,exports,module){
 		},
 		onNextStep:function(){
 			if ( this.model.get("name") ){
+				$("#adventure-book-action-bar").show();
 				showAdventureView();
 			}
 		}

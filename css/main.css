@@ -171,7 +171,18 @@
 	background:url("../web/images/arrow.png") no-repeat scroll 0 0 / contain  transparent;
 }
 
-.pc-avatar .walk-direction.hide, .pc-avatar.moving .walk-direction , .pc-avatar.moving .start-encounter{
+.pc-avatar .see-place-description {
+	left: -40px;
+    top: -30px;
+	position:absolute;
+	display:none;
+}
+
+.pc-avatar .see-place-description.valid {
+	display:block;
+}
+
+.pc-avatar .walk-direction.hide, .pc-avatar.moving .walk-direction , .pc-avatar.moving .start-encounter, .pc-avatar.moving .see-place-description{
 	display:none;
 }
 
@@ -203,6 +214,7 @@
     top: -30px;
 	position:absolute;
 }
+
 /*card*/
 .card {
 	top: 25px;

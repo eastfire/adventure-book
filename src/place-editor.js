@@ -147,6 +147,7 @@
 		},
 		renderPlaceDetail:function(place){
 			this.$(".place-name-input").val(place?place.name:"");
+			this.$(".place-description-input").val(place?place.desc:"");
 			this.$(".place-position .active").removeClass("active");
 			var position = place ? (place.position || "unknow"):"unknow";
 			this.$(".place-position #"+position).parent().addClass("active");
@@ -174,6 +175,8 @@
 			if ( placeName == "") {
 				return;
 			}
+			var placeDescription = this.$(".place-description-input").val();
+			placeDescription = placeDescription && placeDescription.trim();
 			if ( this.placeCollection.filter(function(place){
 				return place.name == placeName;
 			}).length )
@@ -185,6 +188,7 @@
 			var self = this;
 			var opt = {".priority":placeName, 
 					name:placeName,
+					desc:placeDescription,
 					type:placeType,
 					position:placePosition,
 					isSecret:isSecret,

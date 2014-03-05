@@ -3,6 +3,8 @@ define(function(require,exports,module){
 	var Global = require("./global");
 	var HandView = require("./player-hand").HandView;
 	var AdjustmentView = require("./player-hand").AdjustmentView;
+	var Board = require("./board").Board;
+	var getPlaceId = require("./board").getPlaceId;
 
 	var genHand = function(){
 		var deck = Global.currentPc.get("deck");
@@ -30,6 +32,11 @@ define(function(require,exports,module){
 	}
 
 	var generateStoryStatus = function(pc){
+		if ( !pc.get("where").placeId ){
+			var w = clone( pc.get("where") );
+			w.placeId = getPlaceId(pc.get("where").x,pc.get("where").y);
+			pc.set("where" , w);				
+		}
 		var place = Global.placeCollection.get(pc.get("where").placeId);
 		var type = place.get("type");
 		var meetableNpcs = place.get("meetableNpc");
@@ -132,6 +139,7 @@ define(function(require,exports,module){
 		events:{
 			"click .action-select-item":"onSelectAction",
 			"click .start-encounter":"onStartEncounter",
+			"click .see-place-description":"onSeePlaceDescription",
 			"click .move-avatar":"onMoveAvatar"
 		},
 		initialize:function(){
@@ -269,8 +277,7 @@ define(function(require,exports,module){
 		},
 		renderMap:function(){
 			this.storyView.empty();
-			this.mapView.show();
-			var Board = require("./board").Board;
+			this.mapView.show();			
 			var board = new Board();
 			this.mapView.append(board.render().el);
 
@@ -282,6 +289,20 @@ define(function(require,exports,module){
 			Global.currentPc.set({
 				status:"before-encounter"} );
 			this.renderEncounter();
+		},
+		onSeePlaceDescription:function(){
+			var pc = Global.currentPc;
+			if ( !pc.get("where").placeId ){
+				var w = clone( pc.get("where") );
+				w.placeId = getPlaceId(pc.get("where").x,pc.get("where").y);
+				pc.set("where" , w);				
+			}
+			var place = Global.placeCollection.get(pc.get("where").placeId);
+			if ( place.get("desc") ){
+				toastr.options.timeOut = 10000;
+				toastr["info"](place.get("desc"), place.get("name"),{"showDuration": "-1"});
+				toastr.options.timeOut = 3000;
+			}
 		}
 	});
 

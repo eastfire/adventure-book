@@ -1,4 +1,7 @@
 define(function(require,exports,module){
+	var Global = require("./global");
+	var Model = require("./model");
+
 	exports.ProfileEditor = Backbone.View.extend({
 		template:_.template(require("../layout/profile-editor.html")),
 		events:{
@@ -52,7 +55,7 @@ define(function(require,exports,module){
 		},
 		onNextStep:function(){
 			if ( this.model.get("nickname") ){
-				Global.currentPcId = model.get("currentPcId");
+				Global.currentPcId = this.model.get("currentPcId");
 				if ( Global.currentPcId ){							
 					Global.currentPc = new Model.Pc({},{
 						firebase: new Firebase(Global.FIREBASE_URL + "/user/"+Global.currentUser.id+"/pc/"+Global.currentPcId)

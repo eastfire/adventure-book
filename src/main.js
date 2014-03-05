@@ -105,21 +105,18 @@ define(function(require,exports,module){
 				handleError(error);
 			} else {
 				var usersRef = new Firebase(Global.FIREBASE_URL + "/user/");
-				usersRef.push({
-					id:user.id,
-					inuse:true,
-					pc:[{
-						userId:user.id
-					}],
+				var opt = {};
+				opt[user.id] = {
 					profile:{
 						currentPcId:1
 					}
-				});
+				};
+				usersRef.update(opt);
 				auth.login('password', {
 					email: email,
 					password: password,
 					rememberMe: remember
-				});
+				});				
 			}
 		});
 	});

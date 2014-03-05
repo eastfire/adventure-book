@@ -39,7 +39,7 @@ define(function(require,exports,module){
 							if ( model.get("nickname") )	{
 								$("#loading-content").html("加载用户信息成功");
 								Global.currentPcId = model.get("currentPcId");
-								if ( Global.currentPcId ){							
+								if ( Global.currentPcId !== null ){
 									Global.currentPc = new Model.Pc({},{
 										firebase: new Firebase(Global.FIREBASE_URL + "/user/"+Global.currentUser.id+"/pc/"+Global.currentPcId)
 									});
@@ -49,6 +49,9 @@ define(function(require,exports,module){
 										$("#loading-dialog").modal("hide");
 									});
 								} else {
+									Global.currentPc = new Model.Pc({},{
+										firebase: new Firebase(Global.FIREBASE_URL + "/user/"+Global.currentUser.id+"/pc/0")
+									});
 									$("#loading-dialog").modal("hide");
 									window.showPCEditor();
 								}

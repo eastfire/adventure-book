@@ -33,7 +33,18 @@ define(function(require,exports,module){
 		}
 	});
 
+	exports.getPlaceId = function(x,y){
+		for ( var i = 0 ; i < Global.map.length ; i++){
+			var tile = Global.map.at(i);
+			if ( tile.get("x") === x && tile.get("y") === y )	{
+				return tile.get("placeId");
+			}
+		}
+		return 0;
+	};
+
 	var AvatarView = Backbone.View.extend({
+		template:_.template(require("../layout/avatar.html")),
 		events:{
 			"click .walk-direction":"onClickWalk"
 		},
@@ -43,12 +54,13 @@ define(function(require,exports,module){
 			this.up = this.$(".up");
 			this.left = this.$(".left");
 			this.right = this.$(".right");
+			this.seeDesc = this.$(".see-place-description");
 
 			Global.currentPc.on("change:where",this.render, this);
 		},
 		initLayout:function(){
 			this.$el.addClass("pc-avatar css-animator");
-			this.$el.html("<div class='left walk-direction' direction='left'></div><div class='up walk-direction' direction='up'></div><div class='right walk-direction' direction='right'></div><div class='down walk-direction' direction='down'></div><button class='start-encounter btn btn-primary'>发生遭遇</button>");
+			this.$el.html(this.template());
 		},
 		render:function(){			
 			var where = this.model.get("where");
@@ -68,6 +80,11 @@ define(function(require,exports,module){
 		},
 		renderByPosition:function(){
 			var where = Global.currentPc.get("where");
+			if ( this.isPlaceHasDescription(where.x, where.y ) ){
+				this.seeDesc.addClass("valid");
+			} else {
+				this.seeDesc.removeClass("valid");
+			}
 			if ( !this.isPlaceAccessable( where.x, where.y+1 ) )
 				this.down.addClass("hide");
 			else
@@ -89,18 +106,19 @@ define(function(require,exports,module){
 				this.right.removeClass("hide");
 		},
 
-		getPlaceId:function(x,y){
-			for ( var i = 0 ; i < Global.map.length ; i++){
-				var tile = Global.map.at(i);
-				if ( tile.get("x") === x && tile.get("y") === y )	{
-					return tile.get("placeId");
+		isPlaceHasDescription:function(x,y){
+			var placeId = exports.getPlaceId(x,y);
+			if ( placeId ){
+				var place = Global.placeCollection.get(placeId);
+				if ( place ){
+					return place.get("desc");
 				}
 			}
-			return 0;
+			return false;
 		},
 		
 		isPlaceAccessable:function(x, y){
-			var placeId = this.getPlaceId(x,y);
+			var placeId = exports.getPlaceId(x,y);
 			if ( placeId ){
 				var place = Global.placeCollection.get(placeId);
 				if ( place && !place.get("isSecret") ){
@@ -130,7 +148,7 @@ define(function(require,exports,module){
 				where.y += 1;
 				break;
 			}
-			where.placeId = this.getPlaceId(where.x,where.y);
+			where.placeId = exports.getPlaceId(where.x,where.y);
 			Global.currentPc.set({where: where });
 		}
 	});
