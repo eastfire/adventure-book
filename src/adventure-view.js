@@ -299,9 +299,7 @@ define(function(require,exports,module){
 			}
 			var place = Global.placeCollection.get(pc.get("where").placeId);
 			if ( place.get("desc") ){
-				toastr.options.timeOut = 10000;
-				toastr["info"](place.get("desc"), place.get("name"),{"showDuration": "-1"});
-				toastr.options.timeOut = 3000;
+				toastr["info"](place.get("desc"), place.get("name"),{timeOut: 10000});
 			}
 		}
 	});
