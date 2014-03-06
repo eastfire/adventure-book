@@ -167,9 +167,9 @@ define(function(require,exports,module){
 
 	window.showMapEditor = function(){
 		clearMainboard();
-		var Board = require("./board").Board;
-		var board = new Board();
-		$("#main-board").append(board.render().el);
+		var MapEditor = require("./map-editor").MapEditor;
+		var mapEditor = new MapEditor();
+		$("#main-board").append(mapEditor.render().el);
 	}
 
 	window.showProfileEditor = function(){
