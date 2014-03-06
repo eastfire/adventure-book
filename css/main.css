@@ -40,12 +40,25 @@
 	border:1px solid black;
 	border-radius:3px;
 	text-align: center;
+	position:relative;
 }
 
 .npc-attr-item-editing, .npc-action-item-editing{
 	text-align: center;
 }
 
+.npc-attr-item-view .delete, .npc-action-item-view .delete {
+    position: absolute;
+    right: 0;
+    top: -5px;
+	cursor:pointer;
+	font-size:20px;
+	display:none;
+}
+
+.npc-attr-item-view:hover .delete , .npc-action-item-view:hover .delete{
+	display:block;
+}
 
 /*place-editor*/
 .place-list {
