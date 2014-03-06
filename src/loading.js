@@ -9,16 +9,13 @@ define(function(require,exports,module){
 	
 	exports.startLoading = function(){
 		
-		Global.npcCollection = new NpcCollection();
-		
-		
 		Global.card = new CardTemplateCollection();
 
 		$("#loading-dialog").modal({
 			show:true
 		});
 		
-		
+		Global.npcCollection = new NpcCollection();
 		$("#loading-content").html("加载NPC");
 		Global.npcCollection.once("add",function(){
 			$("#loading-content").html("加载NPC成功");

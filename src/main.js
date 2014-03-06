@@ -98,9 +98,9 @@ define(function(require,exports,module){
 			toastr["error"]("请输入密码");
 			return;
 		}
-		$("user-register-btn").button('loading');
+		$("#user-register-btn").button('loading');
 		auth.createUser(email, password, function(error, user) {
-			$("user-register-btn").button('reset');
+			$("#user-register-btn").button('reset');
 			if (error) {
 				handleError(error);
 			} else {
@@ -167,9 +167,9 @@ define(function(require,exports,module){
 
 	window.showMapEditor = function(){
 		clearMainboard();
-		var Board = require("./board").Board;
-		var board = new Board();
-		$("#main-board").append(board.render().el);
+		var MapEditor = require("./map-editor").MapEditor;
+		var mapEditor = new MapEditor();
+		$("#main-board").append(mapEditor.render().el);
 	}
 
 	window.showProfileEditor = function(){

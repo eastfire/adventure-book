@@ -13,12 +13,16 @@
 			return this;
 		}
 	});
-	var NpcAttrItem = Backbone.View.extend({		
+	var NpcAttrItem = Backbone.View.extend({
+		events:{
+			"click .delete":"onDeleteItem"
+		},
 		initialize:function(options){
 			this.options = options;
 		},
 		render:function(){
 			this.$el.addClass("npc-attr-item-view");
+			this.$el.html("<div class='delete'>×</div>");
 			this.$el.viewEditExchangable({
 				viewClass:"npc-attr-item",
 				editClass:"npc-attr-item-editing",
@@ -27,15 +31,22 @@
 				onBlur:"apply"
 			});
 			return this;
+		},
+		onDeleteItem:function(){
+			this.remove();
 		}
 	});
-	var NpcActionItem = Backbone.View.extend({		
+	var NpcActionItem = Backbone.View.extend({
+		events:{
+			"click .delete":"onDeleteItem"
+		},
 		initialize:function(options){
 			this.options = options;
 		},
 		render:function(){
 			var m = this.model;
 			this.$el.addClass("npc-action-item-view");
+			this.$el.html("<div class='delete'>×</div>");
 			this.$el.viewEditExchangable({
 				viewClass:"npc-action-item",
 				editClass:"npc-action-item-editing",
@@ -44,6 +55,9 @@
 				onBlur:"apply"
 			});
 			return this;
+		},
+		onDeleteItem:function(){
+			this.remove();
 		}
 	});
 
