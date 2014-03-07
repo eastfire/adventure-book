@@ -62,7 +62,7 @@
 		firebase: new Firebase(Global.FIREBASE_URL + "/user/"+Global.currentUser.id+"/profile"),
 		defaults:function(){
 			return {
-				portrait:"",
+				portrait:"./web/images/default-portrait.jpg",
 				nickname:"",
 				fatePoint:0,
 				storyPoint:0,

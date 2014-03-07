@@ -74,7 +74,7 @@ define(function(require,exports,module){
 			setTimeout(function(){
 				self.$el.removeClass("moving");
 			}, 500);
-			this.$el.css( "background-image","url("+this.model.get("avatar")+")" );
+			this.$el.css( "background-image","url("+(this.model.get("avatar") || "./web/images/default-avatar.png")+")" );
 			self.renderByPosition();			
 			return this;
 		},

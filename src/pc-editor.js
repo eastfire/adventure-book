@@ -1,4 +1,6 @@
 define(function(require,exports,module){
+	var Global = require("./global");
+
 	exports.PCEditor = Backbone.View.extend({
 		template:_.template(require("../layout/pc-editor.html")),
 		events:{
@@ -66,6 +68,13 @@ define(function(require,exports,module){
 			this.renderPortrait();
 			this.renderAvatar();
 			this.renderGender();
+
+			if ( this.model.get("deck") && this.model.get("deck").length ){
+				this.$(".deck-block").show();
+				this.$(".deck-count").html = this.model.get("deck").length+"张";
+			} else {
+				this.$(".deck-block").hide();
+			}
 			return this;
 		},
 		renderGender:function(){
@@ -85,6 +94,14 @@ define(function(require,exports,module){
 		},
 		onNextStep:function(){
 			if ( this.model.get("name") ){
+				this.model.set({
+					status:"world",
+					where:{
+						world: Global.WORLD_ID,
+						x:0,
+						y:0
+						}
+					});
 				$("#adventure-book-action-bar").show();
 				showAdventureView();
 			}
