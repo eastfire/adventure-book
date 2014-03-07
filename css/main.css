@@ -93,6 +93,7 @@
 	right:0;
 	top:0;
 	display:none;
+	cursor:pointer;
 }
 
 .meetable-npc-item:hover .delete {
@@ -115,6 +116,19 @@
 
 .meetable-place-item-wrap , .story-action-item-wrap{
 	border:1px solid black;
+	position:relative;
+}
+
+.meetable-place-item-wrap .delete, .story-action-item-wrap .delete{
+	position:absolute;
+	right:0;
+	top:0;
+	cursor:pointer;
+	display:none;
+}
+
+.meetable-place-item-wrap:hover .delete, .story-action-item-wrap:hover .delete{
+	display:block;
 }
 
 .check-subject-select {
