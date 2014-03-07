@@ -74,7 +74,7 @@ define(function(require,exports,module){
 				this.checkHint.html("即将发生一些检定。");
 			} else {
 				var str; 
-				if ( this.model.dice === 0 ){
+				if ( this.model.dice === 0 || this.model.dice === "0"){
 					str = "即将检定你是否有"+this.model.difficulty+"或以上的"+this.model.type+"。";
 				} else {
 					str = "即将发生"+this.model.type+"检定。扔"+this.model.dice+"颗骰子的结果加你的"+this.model.type+"值是否大于等于"+this.model.difficulty;

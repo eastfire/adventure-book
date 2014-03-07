@@ -19,6 +19,9 @@
 	exports.MeetableNpcItem = Backbone.View.extend({
 		template:_.template(require("../layout/meetable-npc-item.html")),
 		tagName:"li",
+		events:{
+			"click .delete":"onDelete"
+		},
 		initialize:function(options){
 			this.options = options;
 		},
@@ -78,6 +81,9 @@
 				this.$(".meetable-npc-de").hide();
 				this.$(".meetable-npc-attr").viewEditExchangable("option",{data:null});
 			}
+		},
+		onDelete:function(){
+			this.remove();
 		}
 	});
 	exports.PlaceEditor = Backbone.View.extend({

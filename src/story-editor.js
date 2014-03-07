@@ -47,6 +47,9 @@ define(function(require,exports,module){
 	});
 	var MeetablePlaceItem = Backbone.View.extend({
 		tagName:"li",
+		events:{
+			"click .delete":"onDelete"
+		},
 		render:function(){
 			var m = this.model;
 			var selectedData = m.placeId || 0;
@@ -55,7 +58,7 @@ define(function(require,exports,module){
 			}
 			var self = this;
 			this.$el.addClass("list-group-item col-sm-3 meetable-place-item-wrap");
-			this.$el.append("<div class='meetable-place-item'></div>");
+			this.$el.append("<div class='meetable-place-item'></div><div class='delete'>×</div>");
 			this.$(".meetable-place-item").viewEditExchangable({
 				editType: "select",
 				selects: placeNames,
@@ -68,15 +71,21 @@ define(function(require,exports,module){
 
 			return this;
 		},
+		onDelete:function(){
+			this.remove();
+		}
 	});
 	var MeetableNpcItem = require("./place-editor").MeetableNpcItem;
 	var ActionItem = Backbone.View.extend({
 		tagName:"li",
+		events:{
+			"click .delete":"onDelete"
+		},
 		render:function(){
 			var m = this.model;			
 			var self = this;
 			this.$el.addClass("list-group-item col-sm-3 story-action-item-wrap");
-			this.$el.append("<div class='story-action-item'></div>");
+			this.$el.append("<div class='story-action-item'></div></div><div class='delete'>×</div>");
 			this.$(".story-action-item").viewEditExchangable({
 				editType: "select",
 				selects: actionNames,
@@ -89,6 +98,9 @@ define(function(require,exports,module){
 
 			return this;
 		},
+		onDelete:function(){
+			this.remove();
+		}
 	});
 
 	exports.StoryEditor = Backbone.View.extend({
